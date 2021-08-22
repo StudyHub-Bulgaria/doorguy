@@ -18,3 +18,11 @@ Note: The raspberry hardware is quite overkill for this.
 - webapp/ folder contains the web app part
 - door_iface has the TCP/IP interface stuff for the doors
 - rp_client has the stuff that runs on the raspberries to detect and check QRs. 
+
+
+## To start
+
+For windows, you need to setup python, flask, pip and probably opencv and some more libs.
+
+Then set the FLASK_* env variables for flask or
+on linux, you can use the shell script to set the env variables.
