@@ -1,5 +1,5 @@
 import qrcode
-import cv2 as cv
+#import cv2 as cv
 
 info = input("info yes? :")
 
