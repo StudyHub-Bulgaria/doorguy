@@ -1,28 +1,44 @@
 ## StudyHub Doorman 
 
-#### System for entering / exiting StudyHub with just a phone.
+#### System for entering / exiting StudyHub with just an internet connected phone.
 
-##### Based on python, raspberries and a door controller that talks TCP/IP.
+#### High level overview:
 
-Note: The raspberry hardware is quite overkill for this.
+Customers register / log in, pay subscription free through _inser_payment_processor_here_ and on home page
+get a QR code. Showing the QR code to the reader on the wall will open the door and log the entrance ( exit ).
 
-- Python base app runs on a box inside the library.
-- Users can log in through web portal (porta.studyhub.bg or similar), register, pay subscription and get QR code.
+- Python base app runs on a box inside the library ( debian stable ).
+- MySQL backend on same box.
+- Has web portal for login / registration.
 
-- On each door is a raspbery pi 4 with a camera, detects QR code and matches QR strign against hash in DB. 
-- If match is found, tell door controller to open door.
-
+- On each door is a raspbery pi 4 with a camera,  does some openCV image processing to get unique customer hash
+from QR code and maybe sens a open door request to the door.
 
 ### Structure
 
-- webapp/ folder contains the web app part
-- door_iface has the TCP/IP interface stuff for the doors
-- rp_client has the stuff that runs on the raspberries to detect and check QRs. 
+- webapp/ folder contains the web app part that runs on the debian box
 
+- door-iface has the TCP/IP interface stuff for the doors
+
+- rp-client has the stuff that runs on the raspberries to detect and check QRs. 
 
 ## To start
 
-For windows, you need to setup python, flask, pip and probably opencv and some more libs.
+For windows, you need to setup python, flask, pip and opencv, which is a pain. 
+Also a mysql instance with a specific schema. 
 
-Then set the FLASK_* env variables for flask or
-on linux, you can use the shell script to set the env variables.
+### Docker
+
+Docker images has slim python and dependancies installed.
+For now, windows workflow is to use docker:
+
+- install docker;
+- docker build;
+- docker run;
+
+do arbitrary code changes
+
+- kill old container
+- docker build;
+- docker run;
+- push to github;
