@@ -4,6 +4,7 @@ import hashlib
 from datetime import datetime
 import logging
 
+# Regex a user string to remove most special characters
 def escape_user_string(src):
     tmp = src
     re.sub('[^A-Za-z0-9]+', '', tmp)

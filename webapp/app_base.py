@@ -1,6 +1,6 @@
 from flask.json import jsonify
 from flask import Flask,render_template, request
-#from our_utils import *
+from utils import *
 
 # This is basically a routing table for all the URIs
 # everything resides either in utils or separate modules
@@ -53,7 +53,7 @@ def login_attempt():
 @app.route('/home')
 
 def show_personal_homepage():
-     return "This is your happy place."
 
+    return render_template('home_page.html')
 
 app.run(host="0.0.0.0",port=5000)
