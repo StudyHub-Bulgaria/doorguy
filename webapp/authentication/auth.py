@@ -7,7 +7,7 @@ import mysql.connector
 # read credentials file for local copy of DB
 def get_local_db_creds():
 
-    # maybe uses the same DB name as the one from lumiere?
+    # TODO: move creds to external file
     creds = ("localhost", "read_tester", "test_pass", "studyhub_portal_users")
     return creds
 
