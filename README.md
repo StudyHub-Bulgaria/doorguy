@@ -2,7 +2,7 @@
 
 ### System for entering / exiting StudyHub with just an internet connected phone.
 
-#### High level overview:
+### High level overview:
 
 Doorguy is an access control system. It allows customers to buy a subscription through a webpage
 and authenticate at your door with a QR code.
