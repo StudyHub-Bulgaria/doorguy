@@ -14,12 +14,18 @@ def generate_secret_key():
     return secrets.token_hex()
 
 # hash password with bcrypt and a salt
-def gen_user_pass(user_pass):
+def hash_user_pass(user_pass):
     salt = bcrypt.gensalt()
     phash = bcrypt.hashpw(user_pass.encode(), salt)
     # return "123"
     return phash
     
+def create_user(sql_cursor,usr_name, full_name, phone, email, usr_pass):
+    phash = hash_user_pass(usr_pass)
+
+    # create customer in customers
+    # create customer account in customer_accounts
+    # 
 
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
@@ -50,6 +56,17 @@ def connect_db():
     cursor = cnx.cursor()
     return cnx,cursor
 
+def validate_user_registration_data(usr_name, phone, usr_pass, re_pass):
+    if (usr_name == ""):
+        return "Username is required."
+    if (usr_pass == "" or re_pass == ""):
+        return "Both password fields are required."
+    if (usr_pass != re_pass):
+        return "Password and confirm password did not match."
+    if (len(usr_pass) < 5):
+        return "Your password should be at least 5 symbols long. Stronger password rules will be applied soon."
+
+    return "Success"
 
 # TODO: index DB by username
 # Get hash of user pass from DB
