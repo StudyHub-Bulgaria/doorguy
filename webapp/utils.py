@@ -1,29 +1,40 @@
+from datetime import datetime
 import mysql.connector
 import re
 import hashlib
-from datetime import datetime
 import logging
+import json
+import toml
 
-# Regex a user string to remove most special characters
+# Read db creds from config and pass them back as a dictionary
+def read_db_creds():
+    conf = toml.load(".doorguy_config.toml")
+    return conf["database"]    
+
+# Remove problematic special characters from string
 def escape_user_string(src):
     tmp = src
     re.sub('[^A-Za-z0-9]+', '', tmp)
     return tmp
 
+# Wrapper over SHA512()
 def sha_wrap(src):
     return hashlib.sha512(src)
     
-# TODO: move db creds to config file, change db creds to something legit
-# Connect to DB and return cursor object - use once, pass cursor around!
+# Connect to DB and return cursor object to manipulate DB
 def connect_db():
 
-    # TODO Get DB credentials from safe file
-    # read_credentials()
+    db_creds = read_db_creds()
+    # print("[debug] Connecting to DB: user {} Pass {} host {} DB_name {}".format(
+    # db_creds["user"], db_creds["pass"], db_creds["host"], db_creds["db_name"]))
+
+    # TODO move this to SSL?
     cnx = mysql.connector.connect(
-        user="dumble",
-        password="",
-        host="localhost",
-        database="sh_portal")
+        user=db_creds["user"],
+        password=db_creds["pass"],
+        host=db_creds["host"],
+        database=db_creds["db_name"]
+    )
     cursor = cnx.cursor()
     return cnx,cursor
 
@@ -64,3 +75,5 @@ def create_log(id, username, door_id):
     #     logging.basicConfig(filename='<filename>.log', level=logging.INFO)
 
     logging.info(stamp)
+
+connect_db()

@@ -1,0 +1,7 @@
+# Our config file
+
+[database]
+user = "doorguy"
+pass = "123456"
+host = "localhost"
+db_name = "doorguy_dummy"
