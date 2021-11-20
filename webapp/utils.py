@@ -5,6 +5,15 @@ import hashlib
 import logging
 import json
 import toml
+import os
+import base64
+
+def generate_secret_key():
+    bytes = os.urandom(12)
+    # output = ""
+    # base64.encode(bytes, output)
+    # return output
+    return "some-temp-key"
 
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
@@ -42,26 +51,29 @@ def get_user_pass_db(sql_cursor, username):
     
     # Because SQL conenctor wants tuples
     user_name = (username,)
-    get_query = "SELECT passwd FROM users WHERE username = %s"
+    user_id_query = "SELECT customer_id FROM customer_accounts WHERE username = %s"
+    sql_cursor.execute(user_id_query, user_name)
+    user_id =  sql_cursor.fetchone()
+
+    if (user_id == None):
+        return None
+    
+    get_query = "SELECT password FROM customer_accounts WHERE customer_id = %s"
     sql_cursor.execute(get_query, user_name)
     user_pass = sql_cursor.fetchone()
+
     if (user_pass):
         return user_pass[0]
     else:
         return None
 
-# TODO handle properly rendering error / redirect to home in caller?
 def try_login_user(sql_cursor, username, pass_input):
 
     pass_hash = get_user_pass_db(sql_cursor, username)
     if (pass_hash == pass_input):
-        # return "Login success."
         return True
-        # DO redirect to homepage here with logged in parameter
     else:
-        # return "Login failed. pass mismtach: {} != {}".format(pass_input, pass_hash)
         return False
-        # do redirect to login again with login failed
 
 def create_log(id, username, door_id):
     time = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
