@@ -19,12 +19,12 @@ app = Flask(__name__)
 # Login page 
 @app.route('/')
 def login_page():
-     return render_template('login_template.html')
+     return render_template('login_page.html')
 
 # Register page
 @app.route('/register')
 def register_user():
-    return render_template('register_template.html')
+    return render_template('register_page.html')
     
 # Route user to authentication and show either wrong creds or home page
 @app.route('/login_attempt', methods = ['GET']) #
