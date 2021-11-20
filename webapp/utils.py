@@ -25,10 +25,7 @@ def sha_wrap(src):
 def connect_db():
 
     db_creds = read_db_creds()
-    # print("[debug] Connecting to DB: user {} Pass {} host {} DB_name {}".format(
-    # db_creds["user"], db_creds["pass"], db_creds["host"], db_creds["db_name"]))
 
-    # TODO move this to SSL?
     cnx = mysql.connector.connect(
         user=db_creds["user"],
         password=db_creds["pass"],
@@ -75,5 +72,3 @@ def create_log(id, username, door_id):
     #     logging.basicConfig(filename='<filename>.log', level=logging.INFO)
 
     logging.info(stamp)
-
-connect_db()
