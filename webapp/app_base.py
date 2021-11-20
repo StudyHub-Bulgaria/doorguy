@@ -1,39 +1,18 @@
 from flask.json import jsonify
-from flask import Flask,render_template, request, flash
+from flask import Flask,render_template, request, flash, session
+# import flask_login
 from utils import *
 import jwt
-
-# This is basically a routing table for all the URIs
-# everything resides either in utils or separate modules
 
 # Initialize flask constructor 
 app = Flask(__name__)
 
-# Setup
+# database and "session key" stuff
 db_conn, sql_cursor_obj = connect_db()
 app.secret_key = generate_secret_key()
 
 # Enable logging to /tmp/test.log
 #logging.basicConfig(filename='/tmp/test.log', level=logging.INFO)
-
-# def token_required(f):
-#    @wraps(f)
-#    def decorator(*args, **kwargs):
-#        token = None
-#        if 'x-access-tokens' in request.headers:
-#            token = request.headers['x-access-tokens']
- 
-#        if not token:
-#            return jsonify({'message': 'a valid token is missing'})
-#        try:
-#            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-#         #    current_user = Users.query.filter_by(public_id=data['public_id']).first()
-#        except:
-#            return jsonify({'message': 'token is invalid'})
- 
-#        return f(current_user, *args, **kwargs)
-#    return decorator
-
 
 # Login page 
 @app.route('/')
@@ -58,7 +37,9 @@ def login_attempt():
 
     logged_in = try_login_user(sql_cursor_obj,usr_name, usr_pass)
     if (logged_in):
+        session["user"] = usr_name.encode()
         # do sessio magic?
+        # redirect user to home, set session
         return render_template('home_page.html')
     else:
         flash("Username or Password incorrect.")
@@ -77,7 +58,10 @@ def login_attempt():
 # Route for logged in users
 @app.route('/home')
 def show_personal_homepage():
-
-    return render_template('home_page.html')
-
+    if "user" in session:
+        logged_in_user = session["user"]
+        return "{} is logged in.".format(logged_in_user)
+    # return render_template('home_page.html')
+    else:
+        return "You need to login."
 app.run(host="0.0.0.0",port=5000)

@@ -6,21 +6,20 @@ import hashlib
 import logging
 import json
 import toml
-import os
+import secrets
 import base64
 
+# Get a random 64 byte string in hex
 def generate_secret_key():
-    bytes = os.urandom(12)
-    # output = ""
-    # base64.encode(bytes, output)
-    # return output
-    return "some-temp-key"
+    return secrets.token_hex()
 
 # hash password with bcrypt and a salt
 def gen_user_pass(user_pass):
     salt = bcrypt.gensalt()
     phash = bcrypt.hashpw(user_pass.encode(), salt)
+    # return "123"
     return phash
+    
 
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
@@ -60,13 +59,12 @@ def get_user_pass_db(sql_cursor, username):
     user_name = (username,)
     user_id_query = "SELECT customer_id FROM customer_accounts WHERE username = %s"
     sql_cursor.execute(user_id_query, user_name)
-    user_id =  sql_cursor.fetchone()
-
-    if (user_id == None):
+    user_id_tuple =  sql_cursor.fetchone()
+    if (user_id_tuple == None):
         return None
     
-    get_query = "SELECT password FROM customer_accounts WHERE customer_id = %s"
-    sql_cursor.execute(get_query, user_name)
+    get_query = ("SELECT password FROM customer_accounts WHERE customer_id = %s")
+    sql_cursor.execute(get_query, user_id_tuple)
     user_pass = sql_cursor.fetchone()
 
     if (user_pass):
@@ -77,10 +75,12 @@ def get_user_pass_db(sql_cursor, username):
 def try_login_user(sql_cursor, username, pass_input):
 
     pass_hash = get_user_pass_db(sql_cursor, username)
-    if (bcrypt.checkpw(pass_input, pass_hash)):
-        return True
-    else:
-        return False
+    if (pass_hash):
+        if (bcrypt.checkpw(pass_input.encode(), pass_hash.encode())):
+            return True
+        else:
+            return False
+    return False
 
 def create_log(id, username, door_id):
     time = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
