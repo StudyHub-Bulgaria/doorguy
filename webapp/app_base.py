@@ -1,6 +1,7 @@
 from flask.json import jsonify
 from flask import Flask,render_template, request, flash
 from utils import *
+import jwt
 
 # This is basically a routing table for all the URIs
 # everything resides either in utils or separate modules
@@ -11,8 +12,28 @@ app = Flask(__name__)
 # Setup
 db_conn, sql_cursor_obj = connect_db()
 app.secret_key = generate_secret_key()
+
 # Enable logging to /tmp/test.log
 #logging.basicConfig(filename='/tmp/test.log', level=logging.INFO)
+
+# def token_required(f):
+#    @wraps(f)
+#    def decorator(*args, **kwargs):
+#        token = None
+#        if 'x-access-tokens' in request.headers:
+#            token = request.headers['x-access-tokens']
+ 
+#        if not token:
+#            return jsonify({'message': 'a valid token is missing'})
+#        try:
+#            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+#         #    current_user = Users.query.filter_by(public_id=data['public_id']).first()
+#        except:
+#            return jsonify({'message': 'token is invalid'})
+ 
+#        return f(current_user, *args, **kwargs)
+#    return decorator
+
 
 # Login page 
 @app.route('/')

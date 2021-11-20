@@ -1,6 +1,7 @@
 from datetime import datetime
 import mysql.connector
 import re
+import bcrypt
 import hashlib
 import logging
 import json
@@ -15,6 +16,12 @@ def generate_secret_key():
     # return output
     return "some-temp-key"
 
+# hash password with bcrypt and a salt
+def gen_user_pass(user_pass):
+    salt = bcrypt.gensalt()
+    phash = bcrypt.hashpw(user_pass.encode(), salt)
+    return phash
+
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
     conf = toml.load(".doorguy_config.toml")
@@ -27,8 +34,8 @@ def escape_user_string(src):
     return tmp
 
 # Wrapper over SHA512()
-def sha_wrap(src):
-    return hashlib.sha512(src)
+# def sha_wrap(src):
+#     return hashlib.sha512(src)
     
 # Connect to DB and return cursor object to manipulate DB
 def connect_db():
@@ -70,7 +77,7 @@ def get_user_pass_db(sql_cursor, username):
 def try_login_user(sql_cursor, username, pass_input):
 
     pass_hash = get_user_pass_db(sql_cursor, username)
-    if (pass_hash == pass_input):
+    if (bcrypt.checkpw(pass_input, pass_hash)):
         return True
     else:
         return False
