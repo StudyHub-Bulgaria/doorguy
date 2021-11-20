@@ -50,10 +50,9 @@ def get_user_pass_db(sql_cursor, username):
     else:
         return None
 
-# Todo handle properly rendering error / redirect to home in caller?
+# TODO handle properly rendering error / redirect to home in caller?
 def try_login_user(sql_cursor, username, pass_input):
 
-    # return "adghajkegkl"
     pass_hash = get_user_pass_db(sql_cursor, username)
     if (pass_hash == pass_input):
         # return "Login success."
