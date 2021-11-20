@@ -1,5 +1,5 @@
 from flask.json import jsonify
-from flask import Flask,render_template, request
+from flask import Flask,render_template, request, flash
 from utils import *
 
 # This is basically a routing table for all the URIs
@@ -8,14 +8,18 @@ from utils import *
 # Initialize flask constructor 
 app = Flask(__name__)
 
-# Setup DB for manipulation
+# Setup
 db_conn, sql_cursor_obj = connect_db()
-
+app.secret_key = generate_secret_key()
 # Enable logging to /tmp/test.log
 #logging.basicConfig(filename='/tmp/test.log', level=logging.INFO)
 
 # Login page 
 @app.route('/')
+def landing_page():
+    return render_template('landing_page.html')
+
+@app.route('/login')
 def login_page():
      return render_template('login_page.html')
 
@@ -31,11 +35,15 @@ def login_attempt():
     usr_name = request.args['username']
     usr_pass = request.args['pass']
 
-    stub = try_login_user(sql_cursor_obj,usr_name, usr_pass)
-    if (stub):
+    logged_in = try_login_user(sql_cursor_obj,usr_name, usr_pass)
+    if (logged_in):
+        # do sessio magic?
         return render_template('home_page.html')
     else:
-        return render_template('error_login.html')
+        flash("Username or Password incorrect.")
+        return render_template('login_page.html')
+
+
     # print(type(request))
     # username = ""
     # our_utils.get_user_pass_db(sql_cursor_obj,username)
