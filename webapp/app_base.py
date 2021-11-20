@@ -1,11 +1,18 @@
 from flask.json import jsonify
 from flask import Flask,render_template, request, flash, session
-# import flask_login
+from datetime import timedelta
 from utils import *
 import jwt
+import os
 
 # Initialize flask constructor 
 app = Flask(__name__)
+
+# Make sessions expire every 15 minutes
+app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=15)
+
+# HOld currently logged in users
+logged_in_users = []
 
 # database and "session key" stuff
 db_conn, sql_cursor_obj = connect_db()
@@ -37,9 +44,11 @@ def login_attempt():
 
     logged_in = try_login_user(sql_cursor_obj,usr_name, usr_pass)
     if (logged_in):
-        session["user"] = usr_name.encode()
-        # do sessio magic?
-        # redirect user to home, set session
+        # Create session key for this user
+        temp_key = secrets.token_hex()
+        sk = base64.b64encode(temp_key.encode())
+        session["user"] = sk
+        # logged_in_users.append(sk)
         return render_template('home_page.html')
     else:
         flash("Username or Password incorrect.")
