@@ -17,7 +17,6 @@ The webpage to manage subscriptions is a python Flask app. It can run on a diffe
 The client (Raspberry) scans and parses QR codes, sends https requests to authentication backend, containing the info parsed from QR code. If the info
 matches a user hash (sha512? not decided yet), the client gets an OK response and (the cleint or server? not decided) opens the door.
 
-
 ### Door interface
 
 There are many types of door controllers.
@@ -45,7 +44,7 @@ pip install -r requirements.txt
 
 ### Docker
 
-Under Construction
+There's a dockerfile for running the web app - it doesn't contain latest changes!
 
 ### Motivation
 
