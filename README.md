@@ -1,20 +1,31 @@
-## StudyHub Doorman 
+## StudyHub Doorguy
 
-#### System for entering / exiting StudyHub with just an internet connected phone.
+### System for entering / exiting StudyHub with just an internet connected phone.
 
 #### High level overview:
 
-Customers register / log in, pay subscription free through _inser_payment_processor_here_ and on home page
-get a QR code. Showing the QR code to the reader on the wall will open the door and log the entrance ( exit ).
+Doorguy is an access control system. It allows customers to buy a subscription through a webpage
+and authenticate at your door with a QR code.
 
-- Python base app runs on a box inside the library ( debian stable ).
-- MySQL backend on same box.
-- Has web portal for login / registration.
+For our proof of concept we are using a few Raspberry Pi 4s and the standard raspberry pi cameras v2.
 
-- On each door is a raspbery pi 4 with a camera,  does some openCV image processing to get unique customer hash
-from QR code and maybe sens a open door request to the door.
+### Architeture
 
-### Structure
+The authenticaiton system uses a server-client architecture. 
+The webpage to manage subscriptions is a python Flask app. It can run on a different server than the auth system, as long as both can reach the same DB.
+
+The client (Raspberry) scans and parses QR codes, sends https requests to authentication backend, containing the info parsed from QR code. If the info
+matches a user hash (sha512? not decided yet), the client gets an OK response and (the cleint or server? not decided) opens the door.
+
+
+### Door interface
+
+There are many types of door controllers.
+Ours is listening on a tcp socket, accepting specific commands.
+When auth is okay, "Open current door" request is sent to door controller.
+
+
+### Folder Structure
 
 - webapp/ folder contains the web app part that runs on the debian box
 
@@ -22,23 +33,26 @@ from QR code and maybe sens a open door request to the door.
 
 - rp-client has the stuff that runs on the raspberries to detect and check QRs. 
 
-## To start
+## Development
 
-For windows, you need to setup python, flask, pip and opencv, which is a pain. 
-Also a mysql instance with a specific schema. 
+Under windows, you will need:
+- pythin 3.6+
+- pip 
+- mysql 
+
+Use pip to install the python dependancies:
+pip install -r requirements.txt
 
 ### Docker
 
-Docker images has slim python and dependancies installed.
-For now, windows workflow is to use docker:
+Under Construction
 
-- install docker;
-- docker build;
-- docker run;
+### Motivation
 
-do arbitrary code changes
+StudyHub is a 24/7 co-studying (libary-ish) space in Sofia, Bulgaria. 
+We have a system with RFID cards that are issued to customers at reception during working hours. With the card,
+customers can come in any time they like for the duration of their subscription (weekly, monthly, etc).
 
-- kill old container
-- docker build;
-- docker run;
-- push to github;
+We are a volunteer-run organization and the need to have someone in-person there every day for a full 8 hours is getting difficult.
+This project is aimed at solving this - it would allow users to buy and manage their subscriptions from a phone (tablet, laptop, etc) 
+and authenticate at the door with just a phone.
