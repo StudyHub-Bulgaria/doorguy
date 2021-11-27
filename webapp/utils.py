@@ -132,8 +132,9 @@ def generate_user_code(input_data):
     signed_uuid = sign_code(uuid_hex, 0)
     # Sign user code
     user_code = qrcode.make(signed_uuid)
-
+    print("qr code type: {} can do {}".format(type(user_code), dir(user_code)))
     ## caller can save to DB if they wish
+    ## TODO: this might have to be a file to show in flask after all
     return user_code
 
 
@@ -144,9 +145,14 @@ def sign_code(code, signing_key):
     return code
 
 # Get user QR code from db
-def get_user_code():
+def get_user_code(user_id):
     s  = 30
+    return "some code value"
 
+# Given user id, get QR code filename from DB
+def get_user_code_filename(user_id):
+    # Get qr_code_filename from customer SQL()
+    return "qrcode_test.png"
 
 # Given username, return user uuid hash from DB
 def get_user_uuid(usr_name):

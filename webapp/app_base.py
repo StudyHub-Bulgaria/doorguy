@@ -1,5 +1,5 @@
 from flask.json import jsonify
-from flask import Flask,render_template, request, flash, session
+from flask import Flask,render_template, request, flash, session, redirect, url_for
 from datetime import timedelta
 from utils import *
 import jwt
@@ -53,7 +53,9 @@ def login_attempt():
 
         # This is needed for sessions to time out, otherwise the die _only_ on browser closing
         session.permanent = True
-        return render_template('home_page.html')
+        # this should be redirect
+        # IF flashing here make sure to update home page to ONLY use last flash for img <src>
+        return redirect(url_for('show_homepage'))
     else:
         flash("Username or Password incorrect.")
         return render_template('login_page.html')
@@ -88,16 +90,24 @@ def register_attempt():
 # TODO add check that only logged in users access this
 # Route for logged in users
 @app.route('/home', methods = ['GET'])
-def show_personal_homepage():
+def show_homepage():
     ## TODO map this session key to actual user - either through OBJ in memory or write session key to DB
     # as we'd _really_ like to know who logged in, so we can 
     if "user" in session:
         logged_in_user = session["user"]
-        return "{} is logged in.".format(logged_in_user)
+        # return "{} is logged in.".format(logged_in_user)
         # flash("Welcome bro.")
 
         # TODO: set variable here to show user qr code
-        user_code = get_user_code(user_id)
+        # Get info on which user from session key?
+        user_id = 3
+        user_code_location = get_user_code_filename(user_id)
+        ## TEST
+        # user_code = hashlib.sha512("Some data taht should be encoded".encode()).hexdigest()
+        # fqr = generate_user_code("Some data taht should be encoded".encode())
+        # flash(fqr)
+    
+        flash(user_code_location)
         return render_template('home_page.html')
     else:
         return "You need to login."
