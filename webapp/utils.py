@@ -8,6 +8,7 @@ import json
 import toml
 import secrets
 import base64
+import qrcode
 
 # Get a random 64 byte string in hex
 def generate_secret_key():
@@ -19,17 +20,26 @@ def hash_user_pass(user_pass):
     phash = bcrypt.hashpw(user_pass.encode(), salt)
     # return "123"
     return phash
-    
+
+## Wrapper over user creation
+# generate user QR code
+# save user to DB backend
+# return success / error msg 
 def create_user(sql_cursor,usr_name, full_name, phone, email, usr_pass):
     phash = hash_user_pass(usr_pass)
 
     # create customer in customers
     # create customer account in customer_accounts
-    # 
+    return "Sunshine and rainbows"
 
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
-    conf = toml.load(".doorguy_config.toml")
+    try:
+        conf = toml.load(".doorguy_config.toml")
+    except:
+        print("[error] Configuration file missing.")
+        return
+
     return conf["database"]    
 
 # Remove problematic special characters from string
@@ -42,20 +52,23 @@ def escape_user_string(src):
 # def sha_wrap(src):
 #     return hashlib.sha512(src)
     
-# Connect to DB and return cursor object to manipulate DB
+# Connect to DB and return cursor object to manipulate DB if success
 def connect_db():
-
     db_creds = read_db_creds()
+    try:
+        cnx = mysql.connector.connect(
+            user=db_creds["user"],
+            password=db_creds["pass"],
+            host=db_creds["host"],
+            database=db_creds["db_name"]
+        )
+        cursor = cnx.cursor()
+        return cnx,cursor
+    except:
+        print("[error] Could not connect to mysql database. Please check your configuration, if your database is up and if your user has permissions.")
+        exit(-2)
 
-    cnx = mysql.connector.connect(
-        user=db_creds["user"],
-        password=db_creds["pass"],
-        host=db_creds["host"],
-        database=db_creds["db_name"]
-    )
-    cursor = cnx.cursor()
-    return cnx,cursor
-
+# Some sanity checks over user registration input
 def validate_user_registration_data(usr_name, phone, usr_pass, re_pass):
     if (usr_name == ""):
         return "Username is required."
@@ -107,3 +120,34 @@ def create_log(id, username, door_id):
     #     logging.basicConfig(filename='<filename>.log', level=logging.INFO)
 
     logging.info(stamp)
+
+
+### QR utils
+
+## Final wrapper of user QR code generation. Check docs for more info 
+def generate_user_code(input_data):
+
+    # Pass input data into sha wrapper
+    uuid_hex = hashlib.sha512(input_data).hexdigest()
+    signed_uuid = sign_code(uuid_hex, 0)
+    # Sign user code
+    user_code = qrcode.make(signed_uuid)
+
+    ## caller can save to DB if they wish
+    return user_code
+
+
+# TODO: Sign a code with the ECDSA signing key
+def sign_code(code, signing_key):
+
+    # ECDSA black magic to be implemented
+    return code
+
+# Get user QR code from db
+def get_user_code():
+    s  = 30
+
+
+# Given username, return user uuid hash from DB
+def get_user_uuid(usr_name):
+    return "some hash value"
