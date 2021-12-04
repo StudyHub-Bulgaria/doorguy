@@ -1,10 +1,10 @@
-## StudyHub Doorguy systrem
+## Welcome to StudyHub's doorguy systrem
 
 Doorguy is an access control system. It allows subscribers to register and open doors by scanning a QR code at the door.
 
-## Hardware
-For our proof of concept we are using a few Raspberry Pi 4s and the standard raspberry pi cameras v2 to scan the codes.
-The backend authentication runs on a small linux machine and communicates with standard door controllers from a vendor.
+This project has several components:
+*[Web portal]()
+*
 
 ### Architeture
 
@@ -24,22 +24,25 @@ matches a user hash (sha512? not decided yet), the client gets an OK response an
 
 - docs holds developer documentation.
 
+## How to run
+
+Clone this repo:
+``` git clone https://github.com/StudyHub-Bulgaria/doorguy.git ```
+
+Pre-requisites for the web-app: 
+> Python 3.6+
+> mysql 8
+
+Use pip to install the python dependancies:
+``` pip install -r requirements.txt ```
+
+Run from /webapp
+``` python app_base.py ```
+
+By default you will see the page on http://localhost:5000
 
 ## Contributing
 
-Building the project:
-
-+ For linux:
-asdfbg lorem ispum
-
-+ For windows:
-
-> pythin 3.6+
-> pip 
-> mysql 
-
->Use pip to install the python dependancies:
->pip install -r requirements.txt
 
 Github Workflow:
 - a
@@ -49,6 +52,11 @@ Github Workflow:
 ### Docker
 
 TODO: make usable docker image
+
+## Hardware
+For our proof of concept we are using a few Raspberry Pi 4s and the standard raspberry pi cameras v2 to scan the codes.
+The backend authentication runs on a small linux machine and communicates with standard door controllers from a vendor.
+
 
 ### Motivation
 
