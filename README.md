@@ -27,17 +27,22 @@ matches a user hash (sha512? not decided yet), the client gets an OK response an
 ## How to run
 
 Clone this repo:
+
 ``` git clone https://github.com/StudyHub-Bulgaria/doorguy.git ```
 
-Pre-requisites for the web-app: 
+>Pre-requisites for the web-app: 
 > Python 3.6+
+
 > mysql 8
 
 Use pip to install the python dependancies:
+
 ``` pip install -r requirements.txt ```
 
 Run from /webapp
-``` python app_base.py ```
+```
+python app_base.py 
+```
 
 By default you will see the page on http://localhost:5000
 
