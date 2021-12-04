@@ -24,15 +24,15 @@ matches a user hash (sha512? not decided yet), the client gets an OK response an
 
 - webapp/ folder contains the web portal for registration and login
 
-- door_interface has the TCP/IP interface stuff for the door controllers
+- door_interface/ has the TCP/IP interface stuff for the door controllers
 
-- rp_client has the script running on the raspberries to scan QR codes and check against the auth backend.
+- rp_client/ has the script running on the raspberries to scan QR codes and check against the auth backend.
 
-- docs holds developer documentation. [TODO]
+- docs/ holds developer documentation. [TODO]
 
+- monitor_announce/ holds the discord bot interface and data [TODO remove the hardcoded discord bot key] 
+ 
 - .doorguy_config.toml is the main project config ( DB conenction strings, ports, IPs, etc)
-
-- monitor_announce holds the discord bot interface and data [TODO remove the hardcoded discord bot key] 
 
 ## How to run
 
