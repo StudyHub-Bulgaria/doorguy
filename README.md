@@ -17,8 +17,8 @@ This project has several components:
 The authenticaiton system uses a server-client architecture. 
 The webpage to manage subscriptions is a python Flask app. It can run on a different server than the auth system, as long as both can reach the same DB.
 
-The client (Raspberry) scans and parses QR codes, sends https requests to authentication backend, containing the info parsed from QR code. If the info
-matches a user hash (sha512? not decided yet), the client gets an OK response and (the cleint or server? not decided) opens the door.
+The clients (Raspberry Pis) parse QR codes, send https requests to authentication backend, containing the info parsed from QR code. If the info
+matches a user uuid and is signed with correct ECC key (TODO), the client gets an OK response and the server requests the controller to open the door.
 
 ### Folder Structure
 
