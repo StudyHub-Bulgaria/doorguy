@@ -3,8 +3,12 @@
 Doorguy is an access control system. It allows subscribers to register and open doors by scanning a QR code at the door.
 
 This project has several components:
-*[Web portal]()
-*
+
+* Web portal for user
+
+* Authentication backend to check if a given code has been signed 
+
+* Small python script to control raspberry cameras and send requests for authentication
 
 ### Architeture
 
@@ -16,28 +20,32 @@ matches a user hash (sha512? not decided yet), the client gets an OK response an
 
 ### Folder Structure
 
-- webapp/ folder contains the web app part that runs on the debian box
+- webapp/ folder contains the web portal for registration and login
 
-- door-iface has the TCP/IP interface stuff for the doors
+- door_interface has the TCP/IP interface stuff for the door controllers
 
-- rp-client has the stuff that runs on the raspberries to detect and check QRs. 
+- rp_client has the script running on the raspberries to scan QR codes and check against the auth backend.
 
-- docs holds developer documentation.
+- docs holds developer documentation. [TODO]
+
+- .doorguy_config.toml is the main project config ( DB conenction strings, ports, IPs, etc)
 
 ## How to run
 
 Clone this repo:
+```
+git clone https://github.com/StudyHub-Bulgaria/doorguy.git
+```
 
-``` git clone https://github.com/StudyHub-Bulgaria/doorguy.git ```
+Pre-requisites for the web-app: 
 
->Pre-requisites for the web-app: 
 > Python 3.6+
-
 > mysql 8
 
 Use pip to install the python dependancies:
-
-``` pip install -r requirements.txt ```
+```
+pip install -r requirements.txt
+```
 
 Run from /webapp
 ```
