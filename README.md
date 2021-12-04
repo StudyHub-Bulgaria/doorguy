@@ -10,6 +10,8 @@ This project has several components:
 
 * Small python script to control raspberry cameras and send requests for authentication
 
+* Discord bot to notify us about any components going offline / repeated access failures.
+
 ### Architeture
 
 The authenticaiton system uses a server-client architecture. 
@@ -29,6 +31,8 @@ matches a user hash (sha512? not decided yet), the client gets an OK response an
 - docs holds developer documentation. [TODO]
 
 - .doorguy_config.toml is the main project config ( DB conenction strings, ports, IPs, etc)
+
+- monitor_announce holds the discord bot interface and data [TODO remove the hardcoded discord bot key] 
 
 ## How to run
 
@@ -58,9 +62,9 @@ By default you will see the page on http://localhost:5000
 
 
 Github Workflow:
-- a
-- b
-- +c
+- clone repo
+- create feature branch
+- open pull request for merging
 
 ### Docker
 
@@ -73,7 +77,7 @@ The backend authentication runs on a small linux machine and communicates with s
 
 ### Motivation
 
-StudyHub[www.studyhub.bg] is a 24/7 co-studying (libary-ish) space in Sofia, Bulgaria. 
+[StudyHub](www.studyhub.bg) is a 24/7 co-studying (libary-ish) space in Sofia, Bulgaria. 
 We have a system with RFID cards that are issued to customers at reception during working hours. With the card,
 customers can come in any time they like for the duration of their subscription (weekly, monthly, etc).
 
