@@ -1,9 +1,9 @@
 ## Web portal for users to manage account / subscription.
 
 Takes configuration from .doorguy_config.toml
+static/ holds all the images, css and other web assets.
 
 From landing page, users can login, resgiter or read user guide.
-
 From home page, user can see end of subscription, QR code for authentication, 
 renew subscription button, change password button.
 
