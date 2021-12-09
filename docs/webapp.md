@@ -1,5 +1,7 @@
 ## Web portal for users to manage account / subscription.
 
+Takes configuration from .doorguy_config.toml
+
 From landing page, users can login, resgiter or read user guide.
 
 From home page, user can see end of subscription, QR code for authentication, 
@@ -29,3 +31,18 @@ If ECDSA is implemented, sign user code. ( how to show generated data as image t
 - Make home page pretty.
 
 - Add renew subscription button. Negotiate details with payment processor. DO NOT leave API keys around in repo. Create API to renew subscription dates and validity flag to use with payment processor API. 
+
+
+## Decide on these 
+
+1. Hash user data with salt sha512(user_data,salt) to get hexdigest user ID.
+
+2. Sign with ECDSA signing key?
+
+3. Save into DB user code as varchar somewhat big.
+
+4. On visiting homepage, return user code.
+
+5. Have option of easy code regen - hash with new salt, maybe extra random bytes? -> overwrite DB.
+
+6. Should we rotate user codes? 
