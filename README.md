@@ -18,19 +18,21 @@ The authenticaiton system uses a server-client architecture.
 The webpage to manage subscriptions is a python Flask app. It can run on a different server than the auth system, as long as both can reach the same DB.
 
 The clients (Raspberry Pis) parse QR codes, send https requests to authentication backend, containing the info parsed from QR code. If the info
-matches a user uuid and is signed with correct ECC key (TODO), the client gets an OK response and the server requests the controller to open the door.
+matches a user uuid and is signed with correct ECC key ( to be discussed ) the client gets an OK response and the server requests the controller to open the door.
 
 ### Folder Structure
 
 - webapp/ folder contains the web portal for registration and login
 
+- auth/ holds the service for authentication and user management.
+
 - door_interface/ has the TCP/IP interface stuff for the door controllers
 
 - rp_client/ has the script running on the raspberries to scan QR codes and check against the auth backend.
 
-- docs/ holds developer documentation. [TODO]
+- docs/ holds developer documentation.
 
-- monitor_announce/ holds the discord bot interface and data [TODO remove the hardcoded discord bot key] 
+- monitor_announce/ holds the discord bot interface and data
  
 - .doorguy_config.toml is the main project config ( DB conenction strings, ports, IPs, etc)
 
@@ -62,9 +64,6 @@ python app_base.py
 ```
 
 By default you will see the page on http://localhost:5000
-
-**TODO**
-Would love a neat script to run *everytyhing* for a deployment. + for easy rollbacks.
 
 ## Contributing
 
