@@ -63,6 +63,9 @@ python app_base.py
 
 By default you will see the page on http://localhost:5000
 
+**TODO**
+Would love a neat script to run *everytyhing* for a deployment. + for easy rollbacks.
+
 ## Contributing
 
 Read through the docs. Each component has a description and todo list with needed APIs.
@@ -75,7 +78,8 @@ Github Workflow:
 
 ### Docker
 
-TODO: make usable docker image
+TODO: make usable docker image that runs webportal and authentication and another for DB.
+Have default configs for docker image, have DB dump with docker DB image.
 
 ## Hardware
 For our proof of concept we are using a few Raspberry Pi 4s and the standard raspberry pi cameras v2 to scan the codes.
