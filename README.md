@@ -34,6 +34,9 @@ matches a user uuid and is signed with correct ECC key (TODO), the client gets a
  
 - .doorguy_config.toml is the main project config ( DB conenction strings, ports, IPs, etc)
 
+- test_data/ contains some test QR codes and a database dump with test
+user data.
+
 ## How to run
 
 Clone this repo:
@@ -61,6 +64,8 @@ python app_base.py
 By default you will see the page on http://localhost:5000
 
 ## Contributing
+
+Read through the docs. Each component has a description and todo list with needed APIs.
 
 Github Workflow:
 
