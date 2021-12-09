@@ -43,9 +43,9 @@ def login_attempt():
 
     logged_in = try_login_user(sql_cursor_obj,usr_name, usr_pass)
     if (logged_in):
-        # Create random session key for this user
-        # TODO: OR not so random so we can check which user it was!?!?
-        # TODO: maybe keep a global dict() of user_sesison_key:user_id? 
+        # Create session for user with some userid as session key / cookie so we can give home page content
+        # based on who logged in
+        # maybe keep a global dict() of user_sesison_key:user_id? 
         temp_key = secrets.token_hex()
         # temp_key = get_user_uuid(usr_name)
         sk = base64.b64encode(temp_key.encode())
@@ -53,7 +53,6 @@ def login_attempt():
 
         # This is needed for sessions to time out, otherwise the die _only_ on browser closing
         session.permanent = True
-        # this should be redirect
         # IF flashing here make sure to update home page to ONLY use last flash for img <src>
         return redirect(url_for('show_homepage'))
     else:
@@ -63,6 +62,7 @@ def login_attempt():
 # Route user to registration success and home page or show error message
 @app.route('/register_attempt', methods = ['GET', 'POST'])
 def register_attempt():
+    # Parse user data
     usr_name = request.form.get('username')
     full_name = request.form.get('name')
     uni = request.form.get('uni')
