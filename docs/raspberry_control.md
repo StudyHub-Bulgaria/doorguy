@@ -1,8 +1,6 @@
 ## Each raspberry runs a thin linux with a python script to control the camera. 
 
-## Light modes
-
-Because ambient light differs greatly morning to evenning and are taking pictures of the QR codes, we need to account for ambient light. In very bright ambient light, reduce exposure, in dark evenings increase exposure to get clearer picture.
+Clients scan QR codes with camera, parse data form it, communicate with the backend for authentication. 
 
 ## To Do:
 
@@ -27,6 +25,8 @@ and start authenticating against that. Get both main and backup server IP from c
 - If a valid QR code is detected, using python's qrcode library parse user data. Send data with validation API
 
 #### Light modes:
+
+Because ambient light differs greatly morning to evenning and are taking pictures of the QR codes, we need to account for ambient light. In very bright ambient light, reduce exposure, in dark evenings increase exposure to get clearer picture.
 
 Check average ambient light for morning, noon, evening, night for winter/summer. Need to take a camera to location to do tests.
 - implement 3/4/5 light modes: very dark, mild/cloudy and bright that rotate at set hours (7:00, 13:00, 17:00 etc). Play with exposure times in a dark/bright room to get sharpest image. Test with generated data from test_data/.
