@@ -43,6 +43,7 @@ def login_attempt():
 
     logged_in = try_login_user(sql_cursor_obj,usr_name, usr_pass)
     if (logged_in):
+        ## todo save this somewhere
         # Create session for user with some userid as session key / cookie so we can give home page content
         # based on who logged in
         # maybe keep a global dict() of user_sesison_key:user_id? 
