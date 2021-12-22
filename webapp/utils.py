@@ -10,6 +10,16 @@ import secrets
 import base64
 import qrcode
 
+# Todo create APIs to wrap this and have everything work with user object?
+class user:
+    real_name = ""
+    username = ""
+    uuid = ""
+    pass_hash = ""
+    subscribtion_valid = False
+    subscribtion_end_date = ""
+
+
 # Get a random 64 byte string in hex
 def generate_secret_key():
     return secrets.token_hex()
@@ -157,3 +167,13 @@ def get_user_code_filename(user_id):
 # Given username, return user uuid hash from DB
 def get_user_uuid(usr_name):
     return "some hash value"
+
+# Given user id or name something, give us all subscriptioninfo on custoemr 
+def get_user_subscription_info(user_name):
+
+    user_obj = user()
+    # Call APIs to get stuff from DB
+    user_obj.uuid = get_user_uuid()
+    # ETC
+
+    return user_obj
