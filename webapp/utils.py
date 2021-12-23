@@ -33,7 +33,7 @@ def generate_secret_key():
     return secrets.token_hex()
 
 # hash password with bcrypt and a salt
-def hash_user_pass(user_pass):
+def create_user_pass_hash(user_pass):
     salt = bcrypt.gensalt()
     phash = bcrypt.hashpw(user_pass.encode(), salt)
     # return "123"
@@ -44,10 +44,12 @@ def hash_user_pass(user_pass):
 # save user to DB backend
 # return success / error msg 
 def create_user(sql_cursor,usr_name, full_name, phone, email, usr_pass):
-    phash = hash_user_pass(usr_pass)
+    phash = create_user_pass_hash(usr_pass)
 
     # create customer in customers
     # create customer account in customer_accounts
+
+    # save password etc
     return "Sunshine and rainbows"
 
 # Read db creds from config and pass them back as a dictionary
@@ -61,15 +63,10 @@ def read_db_creds():
     return conf["database"]    
 
 # Remove problematic special characters from string
-def escape_user_string(src):
-    tmp = src
-    re.sub('[^A-Za-z0-9]+', '', tmp)
-    return tmp
+def string_clean_non_alphanumeric(src):
+    res = ''.join(ch for ch in src if ch.isalnum())
+    return res
 
-# Wrapper over SHA512()
-# def sha_wrap(src):
-#     return hashlib.sha512(src)
-    
 # Connect to DB and return cursor object to manipulate DB if success
 def connect_db():
     db_creds = read_db_creds()
@@ -86,18 +83,35 @@ def connect_db():
         print("[error] Could not connect to mysql database. Please check your configuration, if your database is up and if your user has permissions.")
         exit(-2)
 
-# Some sanity checks over user registration input
-def validate_user_registration_data(usr_name, phone, usr_pass, re_pass):
-    if (usr_name == ""):
-        return "Username is required."
-    if (usr_pass == "" or re_pass == ""):
-        return "Both password fields are required."
+# Some sanity checks for user password
+def validate_user_password(usr_pass, re_pass):
+    print("[debug] valdiating password: ", usr_pass)
+
     if (usr_pass != re_pass):
-        return "Password and confirm password did not match."
+        return "Both password fields are required."
+
     if (len(usr_pass) < 5):
         return "Your password should be at least 5 symbols long. Stronger password rules will be applied soon."
 
+    bad_symbols = re.match('[\'\"\\]', usr_pass)
+    return bad_symbols
+
+
+# Some sanity checks over user registration input
+def validate_user_registration_data(usr_name, phone, usr_pass, re_pass):
+    
+    if (usr_name == ""):
+        return "Username is required."
+
+    # Validate passwords
+    res = validate_user_password(usr_pass, re_pass)
+    if (res)
+        return res
+
+    
+
     return "Success"
+
 
 # TODO: index DB by username
 # Get hash of user pass from DB

@@ -66,6 +66,8 @@ def login_attempt():
 @app.route('/register_attempt', methods = ['GET', 'POST'])
 def register_attempt():
     # Parse user data
+
+    #TODO add class object here
     usr_name = request.form.get('username')
     full_name = request.form.get('name')
     uni = request.form.get('uni')
@@ -81,7 +83,6 @@ def register_attempt():
     if (res == "Success"):
         ret = create_user(sql_cursor_obj, usr_name, full_name, phone, email, usr_pass)
         
-        # TODO: better error checking here
         if (ret == "Error"):
             return "Some erros occured during user registration."
         return "Sunflowers and sunshine my darling"
