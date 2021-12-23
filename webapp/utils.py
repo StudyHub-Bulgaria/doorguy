@@ -11,14 +11,22 @@ import base64
 import qrcode
 
 # Todo create APIs to wrap this and have everything work with user object?
-class user:
-    real_name = ""
-    username = ""
-    uuid = ""
-    pass_hash = ""
-    subscribtion_valid = False
-    subscribtion_end_date = ""
-
+class DUser():
+    def __init__(self):
+        self.real_name = ""
+        self.username = ""
+        self.uuid = ""
+        self.pass_hash = ""
+        self.subscribtion_valid = False
+        self.subscribtion_end_date = ""
+        self.email = ""
+    # real_name = ""
+    # username = ""
+    # uuid = ""
+    # pass_hash = ""
+    # subscribtion_valid = False
+    # subscribtion_end_date = ""
+    # email = ""
 
 # Get a random 64 byte string in hex
 def generate_secret_key():
@@ -177,3 +185,4 @@ def get_user_subscription_info(user_name):
     # ETC
 
     return user_obj
+

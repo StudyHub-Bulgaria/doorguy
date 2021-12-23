@@ -5,6 +5,8 @@ from utils import *
 import jwt
 import os
 
+import mail_util
+
 # Initialize flask constructor 
 app = Flask(__name__)
 
