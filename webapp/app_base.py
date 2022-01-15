@@ -5,7 +5,17 @@ from utils import *
 import jwt
 import os
 
+import logging
 import mail_util
+
+
+## Configure logger object
+web_log = logging.getLogger("vratar_log")
+
+# Create formatter, handlers for stream and for file, set severity
+# TODO
+# this will make _ALL_ things log there Enable logging to /tmp/test.log
+#logging.basicConfig(filename='/tmp/test.log', level=logging.INFO)
 
 # Initialize flask constructor 
 app = Flask(__name__)
@@ -17,8 +27,6 @@ app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=15)
 db_conn, sql_cursor_obj = connect_db()
 app.secret_key = generate_secret_key()
 
-# Enable logging to /tmp/test.log
-#logging.basicConfig(filename='/tmp/test.log', level=logging.INFO)
 
 # Login page 
 @app.route('/')
@@ -63,29 +71,32 @@ def login_attempt():
         return render_template('login_page.html')
 
 # Route user to registration success and home page or show error message
-@app.route('/register_attempt', methods = ['GET', 'POST'])
+@app.route('/register_attempt', methods = ['POST'])
 def register_attempt():
     # Parse user data
 
+    print("[DEBUG] Parsing user data ")
     #TODO add class object here
-    usr_name = request.form.get('username')
-    full_name = request.form.get('name')
-    uni = request.form.get('uni')
-    phone = request.form.get('phone')
-    email = request.form.get('email')
-    usr_pass = request.form.get('pass')
-    re_pass = request.form.get('re_pass')
+    user_data = user_profile()
+    user_data.username = request.form.get('username')
+    user_data.real_name = request.form.get('name')
+    user_data.university = request.form.get('uni')
+    user_data.phone_number = request.form.get('phone')
+    user_data.email = request.form.get('email')
+    cleartext_pass = request.form.get('pass')
+    confirm_pass = request.form.get('re_pass')
 
-    print("[debug] pass1: {} pass2: {}".format(usr_pass, re_pass))
+    # print("[debug] pass1: {} pass2: {}".format(usr_pass, re_pass))
 
     # DO all sorts of valdiations
-    res = validate_user_registration_data(usr_name, phone, usr_pass, re_pass)
+    res = validate_user_registration_data(user_data, cleartext_pass, confirm_pass)
     if (res == "Success"):
-        ret = create_user(sql_cursor_obj, usr_name, full_name, phone, email, usr_pass)
+        ret = create_user(sql_cursor_obj, user_data, cleartext_pass)
         
-        if (ret == "Error"):
+        if (not ret):
             return "Some erros occured during user registration."
-        return "Sunflowers and sunshine my darling"
+        
+        return ret
     else:
         flash(res)
         return render_template("register_page.html")
