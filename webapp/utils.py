@@ -42,12 +42,11 @@ class user_profile():
 def generate_secret_key():
     return secrets.token_hex()
 
-# hash password with bcrypt and a salt
-def create_user_pass_hash(user_pass):
+# Hash password with bcrypt and a salt
+def hash_user_pass(user_pass):
     salt = bcrypt.gensalt()
     phash = bcrypt.hashpw(user_pass.encode(), salt)
     return phash
-
 
 def get_current_mysql_time(sql_cursor):
 
@@ -270,3 +269,28 @@ def get_user_subscription_info(user_name):
 
     return user_obj
 
+# INSERT a user in customers table
+def create_customer_record_db():
+    user_insert_q = ""
+    s = 30
+
+# INSERT an acc in customer_accounts
+def create_customer_account_db():
+    s = 30
+
+# INSERT default ( empty ) subscription for user
+def create_customer_subscription_db():
+    s = 30
+
+## Wrapper over entire user creation
+
+# Create user records in db
+# generate user QR code
+# save user to DB backend
+# return success / error msg 
+def create_user(sql_cursor,usr_name, full_name, phone, email, usr_pass):
+    phash = hash_user_pass(usr_pass)
+
+    # create customer in customers
+    # create customer account in customer_accounts
+    return "Sunshine and rainbows"

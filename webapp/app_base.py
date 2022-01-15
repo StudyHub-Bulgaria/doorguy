@@ -95,8 +95,9 @@ def register_attempt():
         
         if (not ret):
             return "Some erros occured during user registration."
-        
-        return ret
+
+        # Actually register user
+        return "Sunflowers and sunshine my darling"
     else:
         flash(res)
         return render_template("register_page.html")
