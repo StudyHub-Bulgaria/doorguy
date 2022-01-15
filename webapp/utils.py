@@ -10,6 +10,7 @@ import toml
 import secrets
 import base64
 import qrcode
+from ecdsa import SigningKey
 
 # Subscription types
 DAILY_SUBSCRIPTION_TYPE = 1
@@ -19,8 +20,9 @@ NONSTUDENT_MONTLY_SUBSCRIPTION_TYPE = 4
 SEMESTER_SUBSCRIPTION_TYPE = 5
 
 # Todo create APIs to wrap this and have everything work with user object?
-class user_profile():
-    def __init__(self):
+class User_profile():
+
+    def __init__(self, name, username, uuid, pass_hash, email):
         self.real_name = ""
         self.username = ""
         self.uuid = ""
@@ -30,13 +32,7 @@ class user_profile():
         self.subscribtion_valid = False
         self.subscribtion_end_date = ""
         self.phone_number = ""
-    # real_name = ""
-    # username = ""
-    # uuid = ""
-    # pass_hash = ""
-    # subscribtion_valid = False
-    # subscribtion_end_date = ""
-    # email = ""
+
 
 # Get a random 64 byte string in hex
 def generate_secret_key():
@@ -61,61 +57,18 @@ def create_user(sql_cursor, user_data, usr_pass):
 
     if (not user_data):
         print("[error] passed EMPTY data to create_user" )
+    
     print("[debug] Creating user in DB.")
-    phash = create_user_pass_hash(usr_pass)
+    phash = hash_user_pass(usr_pass)
 
     # Get current mysql time
     timestamp = get_current_mysql_time(sql_cursor)
 
     # create customer in customers, get the ID of record we just inserted
-    create_customer_q = """INSERT INTO customers (university, real_name, phone, email) VALUES (%s, %s, %s, %s); SELECT LAST_INSERT_ID();"""
-    data_tuple = (user_data.university, user_data.real_name, user_data.phone_number, user_data.email)
- 
-    print("[debug]: About to execute ", create_customer_q)
-    try:
-        sql_cursor.execute(create_customer_q, data_tuple)
-        sql_cursor.fetchall()
-        print("executed?")
-        user_db_id = sql_cursor.lastrowid
-        print("Last row: ", user_db_id)
-
-    except Exception as e:
-        print("[debug] MYSQL error during transaction. User not inserted.")
-        print("debug: Exception: {}".format(e))
-        return None
-    print("[debug] creating user okay ")
-    
-    # if it went through okay, add other customer records
-    add_user_account_q = """INSERT INTO customer_accounts (customer_id, username, password VALUES (%s, %s, %s);"""
-    account_data_tuple = (user_db_id, user_data.username, user_data.pass_hash)
-    print("debug: About to execute ", add_user_account_q )
-
-    try:
-        sql_cursor.execute(add_user_account_q, account_data_tuple)
-        sql_cursor.fetchone()
-    except Exception as e:
-        print("[debug] MYSQL errored during transaction. User Account not created.")
-        print(e)
-        return None
-
-    print(["[debug] user account okay"])
+    create_customer_record_db(sql_cursor, user_data)
 
     # Create customer subscription
-
-    # TODO add subscription active column
-    add_user_default_subscription_q = """INSERT INTO customer_subscriptions (CUSTOMER_ID, is_valid, subscription_type, validity_start, validity_end) VALUES (%s, %s, %s, %s, %s);"""
-    subscription_tuple = (user_db_id, 0, DAILY_SUBSCRIPTION_TYPE, timestamp, timestamp) 
-    
-    try:
-        sql_cursor.execute(add_user_default_subscription_q, subscription_tuple)
-    except:
-        print("[debug] MYSQL errored during transaction. User Subscription not created.")
-        return None
-
-    print("User subscription created. Returning gracefully.")
-    # save password etc
-    return "Sunshine and rainbows. User added succesfully."
-
+ 
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
     try:
@@ -224,26 +177,19 @@ def create_log(id, username, door_id):
 
 
 ### QR utils
-
+## TODO: Figure out data for here
 ## Final wrapper of user QR code generation. Check docs for more info 
-def generate_user_code(input_data):
+def generate_user_code(input_data, sign_key):
 
-    # Pass input data into sha wrapper
     uuid_hex = hashlib.sha512(input_data).hexdigest()
-    signed_uuid = sign_code(uuid_hex, 0)
-    # Sign user code
+    signed_uuid = sign_key.sign(uuid_hex)
     user_code = qrcode.make(signed_uuid)
-    print("qr code type: {} can do {}".format(type(user_code), dir(user_code)))
+
+    # Probably save as file on disk and save file path to DB?
+
     ## caller can save to DB if they wish
     ## TODO: this might have to be a file to show in flask after all
     return user_code
-
-
-# TODO: Sign a code with the ECDSA signing key
-def sign_code(code, signing_key):
-
-    # ECDSA black magic to be implemented
-    return code
 
 # Get user QR code from db
 def get_user_code(user_id):
@@ -256,41 +202,68 @@ def get_user_code_filename(user_id):
     return "qrcode_test.png"
 
 # Given username, return user uuid hash from DB
-def get_user_uuid(usr_name):
+def get_user_uuid_db(usr_name):
+
     return "some hash value"
 
-# Given user id or name something, give us all subscriptioninfo on custoemr 
-def get_user_subscription_info(user_name):
+# Given user name, retrieve customer subscription info
+def get_user_subscription_info_db(user_name):
 
-    user_obj = user()
+    # TODO
+    # user_obj = user()
     # Call APIs to get stuff from DB
-    user_obj.uuid = get_user_uuid()
-    # ETC
+    # user_obj.uuid = get_user_uuid()
+    # JOIN customers, customer subscriptions, where uuid == uuid
+    subscription_info_q = """ SELECT * FROM customer_subscriptions WHERE """
 
-    return user_obj
+    return None
 
-# INSERT a user in customers table
-def create_customer_record_db():
-    user_insert_q = ""
-    s = 30
+# INSERT a user in customers table, return user ID
+def create_customer_record_db(sql_cursor, user_data):
 
-# INSERT an acc in customer_accounts
-def create_customer_account_db():
-    s = 30
+    create_customer_q = """INSERT INTO customers (university, real_name, phone, zkteco_id, email) VALUES (%s, %s, %s,%s, %s); SELECT LAST_INSERT_ID();"""
+    data_tuple = (user_data.university, user_data.real_name, user_data.phone_number, user_data.zkteco_id,user_data.email)
+ 
+    try:
+        print("[debug]: About to execute ", create_customer_q)
+        sql_cursor.execute(create_customer_q, data_tuple)
+        sql_cursor.fetchall()
+        user_db_id = sql_cursor.lastrowid
+        print("User ID: ", user_db_id)
+        return user_db_id
+
+    except Exception as e:
+        print("[debug] MYSQL error during transaction. User not inserted.")
+        print("debug: Exception: {}".format(e))
+        return None
+
+
+# Create an account in customer_accounts
+def create_customer_account_db(sql_cursor, user_db_id, user_data):
+
+    add_user_account_q = """INSERT INTO customer_accounts (customer_id, username, password VALUES (%s, %s, %s);"""
+    account_data_tuple = (user_db_id, user_data.username, user_data.pass_hash)
+    try:
+        print("debug: About to execute ", add_user_account_q )
+        sql_cursor.execute(add_user_account_q, account_data_tuple)
+        sql_cursor.fetchone()
+        print("Account created.")
+    except Exception as e:
+        print("Database error during account creation, account not created: {}".format(e))
+        return None
+
+
 
 # INSERT default ( empty ) subscription for user
-def create_customer_subscription_db():
-    s = 30
+def create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data):
+    # TODO add subscription active column
+    add_user_default_subscription_q = """INSERT INTO customer_subscriptions (CUSTOMER_ID, is_valid, subscription_type, validity_start, validity_end) VALUES (%s, %s, %s, %s, %s);"""
+    subscription_tuple = (user_db_id, 0, DAILY_SUBSCRIPTION_TYPE, timestamp, timestamp) 
 
-## Wrapper over entire user creation
-
-# Create user records in db
-# generate user QR code
-# save user to DB backend
-# return success / error msg 
-def create_user(sql_cursor,usr_name, full_name, phone, email, usr_pass):
-    phash = hash_user_pass(usr_pass)
-
-    # create customer in customers
-    # create customer account in customer_accounts
-    return "Sunshine and rainbows"
+    try:
+        sql_cursor.execute(add_user_default_subscription_q, subscription_tuple)
+        print("Subscription created")
+        return True
+    except Exception as e:
+        print("Database error during account creation, subscription not added: {}".format(e))
+        return None
