@@ -175,9 +175,6 @@ def create_log(id, username, door_id):
 
     logging.info(stamp)
 
-
-### QR utils
-## TODO: Figure out data for here
 ## Final wrapper of user QR code generation. Check docs for more info 
 def generate_user_code(input_data, sign_key):
 
@@ -186,15 +183,17 @@ def generate_user_code(input_data, sign_key):
     user_code = qrcode.make(signed_uuid)
 
     # Probably save as file on disk and save file path to DB?
-
-    ## caller can save to DB if they wish
-    ## TODO: this might have to be a file to show in flask after all
     return user_code
 
-# Get user QR code from db
-def get_user_code(user_id):
-    s  = 30
-    return "some code value"
+#TODO
+# Get user QR code from db given username?
+def get_user_qr_code_path_db(username):
+    user_code_q = """ SELECT user_qr_code_path FROM customer_accounts JOIN customers WHERE username == %s"""
+    # Return the file path for this
+    # sql_cursor.execute()
+    # path = sql_cursor.fetchone()
+    qr_path = "/tmp/user_qr_demo_path"
+    return "qr_path"
 
 # Given user id, get QR code filename from DB
 def get_user_code_filename(user_id):
