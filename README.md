@@ -51,16 +51,18 @@ Pre-requisites for the web-app:
 
 > mysql 8, reachable on 3306 ( can be configured ) 
 
-> DB connection strings are in .doorguy_config.toml
-
 You can use pip (recommended) to install the python dependancies for each component:
+
+If you don't have pip, get it with:
+```
+sudo apt-get install python3-pip
+```
+
+When you have pip, inside web_app directory run:
 ```
 pip install -r requirements.txt
 ```
-
-## How to run the web app
-- Make sure mysql is running
-- Run from /webapp
+To *actually* run the thing, go to web_app/ and run:
 ```
 python app_base.py 
 ```
@@ -68,8 +70,8 @@ python app_base.py
 By default you will see the page on http://localhost:5000
 
 ## Contributing
-
-Read through the docs. Each component has a description and todo list with needed APIs.
+Read through the github Issues - they describe on a high level what the roadmap is.
+For more specific todos, read through the docs. Each component has a description and todo list with needed APIs and functions.
 
 Github Workflow:
 
@@ -78,14 +80,11 @@ Github Workflow:
 - open pull request for merging
 
 ### Docker
-
-TODO: make usable docker image that runs webportal and authentication and another for DB.
-Have default configs for docker image, have DB dump with docker DB image.
+Under construction.
 
 ## Hardware
 For our proof of concept we are using a few Raspberry Pi 4s and the standard raspberry pi cameras v2 to scan the codes.
 The backend authentication runs on a small linux machine and communicates with standard door controllers from a vendor.
-
 
 ### Motivation
 
