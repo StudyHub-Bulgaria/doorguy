@@ -49,16 +49,18 @@ git clone https://github.com/StudyHub-Bulgaria/doorguy.git
 Pre-requisites for the web-app: 
 > Python 3.6+
 
-> mysql 8 reachable on default port
+> mysql 8, reachable on 3306 ( can be configured ) 
 
 > DB connection strings are in .doorguy_config.toml
 
-Use pip to install the python dependancies:
+You can use pip (recommended) to install the python dependancies for each component:
 ```
 pip install -r requirements.txt
 ```
 
-Run from /webapp
+## How to run the web app
+- Make sure mysql is running
+- Run from /webapp
 ```
 python app_base.py 
 ```
