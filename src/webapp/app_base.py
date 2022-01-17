@@ -77,7 +77,8 @@ def register_attempt():
 
     print("[DEBUG] Parsing user data ")
     #TODO add class object here
-    user_data = user_profile()
+
+    user_data = User_profile("","","","","")
     user_data.username = request.form.get('username')
     user_data.real_name = request.form.get('name')
     user_data.university = request.form.get('uni')
