@@ -20,9 +20,10 @@ NONSTUDENT_MONTLY_SUBSCRIPTION_TYPE = 4
 SEMESTER_SUBSCRIPTION_TYPE = 5
 
 # Todo create APIs to wrap this and have everything work with user object?
-class User_profile():
+class user_profile():
 
-    def __init__(self, name, username, uuid, pass_hash, email):
+    #def __init__(self, name, username, uuid, pass_hash, email):
+    def __init__(self):
         self.real_name = ""
         self.username = ""
         self.uuid = ""
@@ -198,7 +199,7 @@ def get_user_qr_code_path_db(username):
 # Given user id, get QR code filename from DB
 def get_user_code_filename(user_id):
     # Get qr_code_filename from customer SQL()
-    return "qrcode_test.png"
+    return "frame.png"
 
 # Given username, return user uuid hash from DB
 def get_user_uuid_db(usr_name):
