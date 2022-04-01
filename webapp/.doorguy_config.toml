@@ -2,6 +2,6 @@
 
 [database]
 user = "doorguy"
-pass = "123456"
+pass = "dev123"
 host = "localhost"
-db_name = "doorguy_dummy"
+db_name = "doorguy_dev"
