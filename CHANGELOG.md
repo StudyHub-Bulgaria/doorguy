@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Planned for 0.0.2]
 ### Added
+- Added http test suite with http prompt
 - basic request/response authenticaion service server
 - basic logger for authentication events
 - interface for communicating with door controllers (ZKTecco)
