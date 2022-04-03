@@ -9,8 +9,6 @@ import logging
 import mail_util
 
 
-## TODO: set coockie expiration
-
 ## Configure logger object
 web_log = logging.getLogger("vratar_log")
 
@@ -46,21 +44,13 @@ def register_user():
     
 # Route user to authentication
 # if user logs in successfully, set session key unique to user
-# and show either wrong username/password or home page
+#  and show either wrong username/password or home page
 @app.route('/login_attempt', methods = ['GET']) #
 def login_attempt():
 
-    # Fail on requests without password/username
-    try:
-        usr_name = request.args['username']
-        usr_pass = request.args['pass']
-    except Exception as e:
-        flash("Username or Password incorrect.")
-        return render_template('login_page.html')    
-    if (not usr_pass):
-        flash("Username or Password incorrect.")
-        return render_template('login_page.html')
-    
+    usr_name = request.args['username']
+    usr_pass = request.args['pass']
+
     logged_in = try_login_user(sql_cursor_obj,usr_name, usr_pass)
     if (logged_in):
         ## todo save this somewhere
@@ -87,24 +77,18 @@ def register_attempt():
 
     print("[DEBUG] Parsing user data ")
     #TODO add class object here
-    # TODO fix class creation here
-    
     user_data = user_profile()
-    try:
-        user_data.username = request.form.get('username')
-        user_data.real_name = request.form.get('name')
-        user_data.university = request.form.get('uni')
-        user_data.phone_number = request.form.get('phone')
-        user_data.email = request.form.get('email')
-        cleartext_pass = request.form.get('pass')
-        confirm_pass = request.form.get('re_pass')
-    except Exception as e:
-        flash("All fields are mandatory")
-        return render_template("register_page.html")
+    user_data.username = request.form.get('username')
+    user_data.real_name = request.form.get('name')
+    user_data.university = request.form.get('uni')
+    user_data.phone_number = request.form.get('phone')
+    user_data.email = request.form.get('email')
+    cleartext_pass = request.form.get('pass')
+    confirm_pass = request.form.get('re_pass')
 
     # print("[debug] pass1: {} pass2: {}".format(usr_pass, re_pass))
 
-    # Validate that user entered legitimate data
+    # DO all sorts of valdiations
     res = validate_user_registration_data(user_data, cleartext_pass, confirm_pass)
     if (res == "Success"):
         ret = create_user(sql_cursor_obj, user_data, cleartext_pass)
@@ -139,9 +123,8 @@ def show_homepage():
         # fqr = generate_user_code("Some data taht should be encoded".encode())
         # flash(fqr)
     
-        flash("static/images/{}".format(user_code_location))
+        flash(user_code_location)
         return render_template('home_page.html')
     else:
         return "You need to login."
-
 app.run(host="0.0.0.0",port=5000)

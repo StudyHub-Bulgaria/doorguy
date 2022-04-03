@@ -1,5 +1,5 @@
+# This should house our ECDSA crypto usage, if we have any
 
-## This will be our "Backend Authentication system".
 # More like a glorified API for valdiating ECDSA signed data
 from ecdsa import SigningKey
 
