@@ -42,6 +42,31 @@ def login_page():
 def register_user():
     return render_template('register_page.html')
     
+    
+@app.route("/forgot_password")
+def forgot_password():
+    return render_template("password_recovery_page.html")
+
+
+@app.route("/recover_password", methods = ["POST"])
+def recover_passwrd():
+    user_email = "template@email.none"
+    try:
+        user_email = request.form.get('email')
+    except Exception as e:
+        flash("Email is required")
+        return render_template("password_recovery_page.html")
+    
+    flash("A recovery email has been sent to {}. Please check your junk folder if you don't see it.".format(user_email))
+    return render_template("password_recovery_page.html")
+    
+    # TODO: If email is valid
+    # Create OTP token, send to email special url
+    # Create handler for password resets 
+    # only shows good page if OTP token was valid 
+    # Save tokens to DB with validity range of 15 mins
+    # Afterr success or 15 mins, wipe token?
+
 # Route user to authentication
 # if user logs in successfully, set session key unique to user
 #  and show either wrong username/password or home page
