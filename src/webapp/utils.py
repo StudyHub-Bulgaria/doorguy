@@ -54,23 +54,42 @@ def get_current_mysql_time(sql_cursor):
 
 ## TODO: checkout zkteco id mapping if any
 ## Wrapper over user creation functoins
-def create_user(sql_cursor, user_data, usr_pass):
-
+def create_user(sql_cursor, user_data, usr_pass, db_conn):
     if (not user_data):
         print("[error] passed EMPTY data to create_user" )
         return None
-    
+
     print("[debug] Creating user in DB.")
     phash = hash_user_pass(usr_pass)
-    
-    # Get current mysql time
+
+    # Create a new user - in the user metadata table
     timestamp = get_current_mysql_time(sql_cursor)
-    # create customer in customers, get the ID of record we just inserted
-    create_customer_record_db(sql_cursor, user_data)
-    
-    # Create customer subscription
+    user_db_id = create_customer_record_db(sql_cursor, user_data)
+    if (not user_db_id):
+        print("Inserting a user failed")
+        return None
+
+    print("Creating customer account ")
+    # Create a new user account tied to this user
     # TODO
-    
+    ret = create_customer_account_db(sql_cursor, user_db_id, user_data)
+
+    # TODO: Move user account creationg to a single batch transaction to be rolled/unrolled
+    if (not ret):
+	    print("Creating customer account failed.")
+	    return None
+
+    print("Try to create customer subscription for user: ", user_db_id)
+
+    create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data)
+    # TODO: We only commit a transaction if we successfully created a user
+    print("Subscription created ! Commiting all changes ")
+
+    db_conn.commit()
+    return user_db_id
+
+    # TODO
+
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
     try:
@@ -79,7 +98,7 @@ def read_db_creds():
         print("[error] Configuration file missing.")
         return
 
-    return conf["database"]    
+    return conf["database"]
 
 # Remove problematic special characters from string
 def string_clean_non_alphanumeric(src):
@@ -118,7 +137,7 @@ def validate_user_password(usr_pass, re_pass):
 
 # Some sanity checks over user registration input
 def validate_user_registration_data(user_data, input_pass, confirm_pass):
-    
+
     if (not user_data.username):
         print("Username given: ", user_data.username)
         return "Username is required."
@@ -140,7 +159,7 @@ def validate_user_registration_data(user_data, input_pass, confirm_pass):
 # TODO: index DB by username
 # Get hash of user pass from DB
 def get_user_pass_db(sql_cursor, username):
-    
+
     # Because SQL conenctor wants tuples
     user_name = (username,)
     user_id_query = "SELECT customer_id FROM customer_accounts WHERE username = %s"
@@ -148,7 +167,7 @@ def get_user_pass_db(sql_cursor, username):
     user_id_tuple =  sql_cursor.fetchone()
     if (user_id_tuple == None):
         return None
-    
+
     get_query = ("SELECT password FROM customer_accounts WHERE customer_id = %s")
     sql_cursor.execute(get_query, user_id_tuple)
     user_pass = sql_cursor.fetchone()
@@ -177,7 +196,7 @@ def create_log(id, username, door_id):
 
     logging.info(stamp)
 
-## Final wrapper of user QR code generation. Check docs for more info 
+## Final wrapper of user QR code generation. Check docs for more info
 def generate_user_code(input_data, sign_key):
 
     uuid_hex = hashlib.sha512(input_data).hexdigest()
@@ -219,20 +238,21 @@ def get_user_subscription_info_db(user_name):
 
     return None
 
-# TODO: More sophisticated parsing of use rnames - or rename DB to realname thing 
+# TODO: More sophisticated parsing of use rnames - or rename DB to realname thing
 # INSERT a user in customers table, return user ID
 def create_customer_record_db(sql_cursor, user_data):
-    
+
     create_customer_q = """INSERT INTO customers (university, first_name, phone, zkteco_id, email) VALUES (%s, %s, %s,%s, %s); """
     data_tuple = (user_data.university, user_data.real_name, user_data.phone_number, user_data.zkteco_id,user_data.email)
     user_id_q = """SELECT LAST_INSERT_ID(); """
     try:
         sql_cursor.execute(create_customer_q, data_tuple)
+        print("Customer insrted")
         user_db_id = sql_cursor.execute(user_id_q, ())
         user_db_id = sql_cursor.fetchone()[0]
         print("[DEBUG] User ID: ", user_db_id)
         return user_db_id
-    
+
     except Exception as e:
         print("[debug] MYSQL error during transaction. User not inserted.")
         print("debug: Exception: {}".format(e))
@@ -242,13 +262,13 @@ def create_customer_record_db(sql_cursor, user_data):
 # Create an account in customer_accounts
 def create_customer_account_db(sql_cursor, user_db_id, user_data):
 
-    add_user_account_q = """INSERT INTO customer_accounts (customer_id, username, password VALUES (%s, %s, %s);"""
+    add_user_account_q = """INSERT INTO customer_accounts (customer_id, username, password) VALUES (%s, %s, %s);"""
     account_data_tuple = (user_db_id, user_data.username, user_data.pass_hash)
     try:
         print("debug: About to execute ", add_user_account_q )
         sql_cursor.execute(add_user_account_q, account_data_tuple)
-        sql_cursor.fetchone()
         print("Account created.")
+        return user_db_id
     except Exception as e:
         print("Database error during account creation, account not created: {}".format(e))
         return None
@@ -259,7 +279,7 @@ def create_customer_account_db(sql_cursor, user_db_id, user_data):
 def create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data):
     # TODO add subscription active column
     add_user_default_subscription_q = """INSERT INTO customer_subscriptions (CUSTOMER_ID, is_valid, subscription_type, validity_start, validity_end) VALUES (%s, %s, %s, %s, %s);"""
-    subscription_tuple = (user_db_id, 0, DAILY_SUBSCRIPTION_TYPE, timestamp, timestamp) 
+    subscription_tuple = (user_db_id, 0, DAILY_SUBSCRIPTION_TYPE, timestamp, timestamp)
 
     try:
         sql_cursor.execute(add_user_default_subscription_q, subscription_tuple)

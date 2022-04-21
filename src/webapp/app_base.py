@@ -109,8 +109,9 @@ def parse_register_form(request, user_data):
 # Route user to registration success and home page or show error message
 @app.route('/register_attempt', methods = ['POST'])
 def register_attempt():
+    
+    global db_conn
     # Parse user data
-
     print("[DEBUG] Parsing user data ")
     #TODO add class object here
     user_data = user_profile()
@@ -125,7 +126,7 @@ def register_attempt():
     # DO all sorts of valdiations
     res = validate_user_registration_data(user_data, cleartext_pass, confirm_pass)
     if (res == "Success"):
-        ret = create_user(sql_cursor_obj, user_data, cleartext_pass)
+        ret = create_user(sql_cursor_obj, user_data, cleartext_pass, db_conn)
         if (not ret):
             return "Some erros occured during user registration."
         
