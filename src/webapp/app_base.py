@@ -96,7 +96,6 @@ def login_attempt():
         return render_template('login_page.html')
 
 def parse_register_form(request, user_data):
-    s = 30
     user_data.username = request.form.get('username')
     user_data.real_name = request.form.get('name')
     user_data.university = request.form.get('uni')
@@ -104,7 +103,6 @@ def parse_register_form(request, user_data):
     user_data.email = request.form.get('email')
     cleartext_pass = request.form.get('pass')
     confirm_pass = request.form.get('re_pass')
-
 
 # Route user to registration success and home page or show error message
 @app.route('/register_attempt', methods = ['POST'])
@@ -122,8 +120,11 @@ def register_attempt():
     user_data.email = request.form.get('email')
     cleartext_pass = request.form.get('pass')
     confirm_pass = request.form.get('re_pass')
+    user_data.pass_hash = hash_user_pass(cleartext_pass)
+    # TODO: Only hash passwords if they exist and matchm no point otherwise
+    #    if (cleartext_pass == confirm_pass):
 
-    # DO all sorts of valdiations
+    # TODO: DO all sorts of valdiations
     res = validate_user_registration_data(user_data, cleartext_pass, confirm_pass)
     if (res == "Success"):
         ret = create_user(sql_cursor_obj, user_data, cleartext_pass, db_conn)
@@ -131,6 +132,8 @@ def register_attempt():
             return "Some erros occured during user registration."
         
         # Actually register user
+        # flash("Registration success!")
+        # return render_template(login_page)
         return "User registration success!"
     else:
         flash(res)

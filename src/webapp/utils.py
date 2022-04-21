@@ -10,6 +10,7 @@ import toml
 import secrets
 import base64
 import qrcode
+import time
 from ecdsa import SigningKey
 
 # Subscription types
@@ -39,18 +40,18 @@ class User_profile():
 def generate_secret_key():
     return secrets.token_hex()
 
-# Hash password with bcrypt and a salt
+# Hash password with bcrypt and a salt, return a string of the hash
 def hash_user_pass(user_pass):
     salt = bcrypt.gensalt()
     phash = bcrypt.hashpw(user_pass.encode(), salt)
-    return phash
+    return phash.decode()
 
+# TODO:
+## Why am I asking the DB for time??
 def get_current_mysql_time(sql_cursor):
 
-    time_q = "SELECT CURRENT_TIMESTAMP()"
-    sql_cursor.execute(time_q)
-    timestamp = sql_cursor.fetchone()
-    return timestamp
+    time = time.time()
+    return time
 
 ## TODO: checkout zkteco id mapping if any
 ## Wrapper over user creation functoins
@@ -60,10 +61,9 @@ def create_user(sql_cursor, user_data, usr_pass, db_conn):
         return None
 
     print("[debug] Creating user in DB.")
-    phash = hash_user_pass(usr_pass)
-
+    
     # Create a new user - in the user metadata table
-    timestamp = get_current_mysql_time(sql_cursor)
+    timestamp = int(time.time())
     user_db_id = create_customer_record_db(sql_cursor, user_data)
     if (not user_db_id):
         print("Inserting a user failed")
@@ -80,11 +80,8 @@ def create_user(sql_cursor, user_data, usr_pass, db_conn):
 	    return None
 
     print("Try to create customer subscription for user: ", user_db_id)
-
     create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data)
     # TODO: We only commit a transaction if we successfully created a user
-    print("Subscription created ! Commiting all changes ")
-
     db_conn.commit()
     return user_db_id
 
@@ -264,6 +261,8 @@ def create_customer_account_db(sql_cursor, user_db_id, user_data):
 
     add_user_account_q = """INSERT INTO customer_accounts (customer_id, username, password) VALUES (%s, %s, %s);"""
     account_data_tuple = (user_db_id, user_data.username, user_data.pass_hash)
+    print("[debug] Customer account: {}".format(account_data_tuple))
+
     try:
         print("debug: About to execute ", add_user_account_q )
         sql_cursor.execute(add_user_account_q, account_data_tuple)
@@ -280,7 +279,8 @@ def create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data
     # TODO add subscription active column
     add_user_default_subscription_q = """INSERT INTO customer_subscriptions (CUSTOMER_ID, is_valid, subscription_type, validity_start, validity_end) VALUES (%s, %s, %s, %s, %s);"""
     subscription_tuple = (user_db_id, 0, DAILY_SUBSCRIPTION_TYPE, timestamp, timestamp)
-
+    print("creating subscription with: {}".format(subscription_tuple))
+    
     try:
         sql_cursor.execute(add_user_default_subscription_q, subscription_tuple)
         print("Subscription created")
