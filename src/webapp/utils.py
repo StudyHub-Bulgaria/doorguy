@@ -32,6 +32,7 @@ class User_profile():
         self.subscribtion_valid = False
         self.subscribtion_end_date = ""
         self.phone_number = ""
+        self.zkteco_id = 0
 
 
 # Get a random 64 byte string in hex
@@ -57,18 +58,19 @@ def create_user(sql_cursor, user_data, usr_pass):
 
     if (not user_data):
         print("[error] passed EMPTY data to create_user" )
+        return None
     
     print("[debug] Creating user in DB.")
     phash = hash_user_pass(usr_pass)
-
+    
     # Get current mysql time
     timestamp = get_current_mysql_time(sql_cursor)
-
     # create customer in customers, get the ID of record we just inserted
     create_customer_record_db(sql_cursor, user_data)
-
+    
     # Create customer subscription
- 
+    # TODO
+    
 # Read db creds from config and pass them back as a dictionary
 def read_db_creds():
     try:
@@ -217,20 +219,20 @@ def get_user_subscription_info_db(user_name):
 
     return None
 
+# TODO: More sophisticated parsing of use rnames - or rename DB to realname thing 
 # INSERT a user in customers table, return user ID
 def create_customer_record_db(sql_cursor, user_data):
-
-    create_customer_q = """INSERT INTO customers (university, real_name, phone, zkteco_id, email) VALUES (%s, %s, %s,%s, %s); SELECT LAST_INSERT_ID();"""
+    
+    create_customer_q = """INSERT INTO customers (university, first_name, phone, zkteco_id, email) VALUES (%s, %s, %s,%s, %s); """
     data_tuple = (user_data.university, user_data.real_name, user_data.phone_number, user_data.zkteco_id,user_data.email)
- 
+    user_id_q = """SELECT LAST_INSERT_ID(); """
     try:
-        print("[debug]: About to execute ", create_customer_q)
         sql_cursor.execute(create_customer_q, data_tuple)
-        sql_cursor.fetchall()
-        user_db_id = sql_cursor.lastrowid
-        print("User ID: ", user_db_id)
+        user_db_id = sql_cursor.execute(user_id_q, ())
+        user_db_id = sql_cursor.fetchone()[0]
+        print("[DEBUG] User ID: ", user_db_id)
         return user_db_id
-
+    
     except Exception as e:
         print("[debug] MYSQL error during transaction. User not inserted.")
         print("debug: Exception: {}".format(e))
