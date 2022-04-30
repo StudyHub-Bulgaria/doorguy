@@ -276,7 +276,8 @@ def create_customer_account_db(sql_cursor, user_db_id, user_data):
 
 # INSERT default ( empty ) subscription for user
 def create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data):
-    # TODO add subscription active column
+
+    # TODO add subscription active column - or always calcualte on the fly?
     add_user_default_subscription_q = """INSERT INTO customer_subscriptions (CUSTOMER_ID, is_valid, subscription_type, validity_start, validity_end) VALUES (%s, %s, %s, %s, %s);"""
     subscription_tuple = (user_db_id, 0, DAILY_SUBSCRIPTION_TYPE, timestamp, timestamp)
     print("creating subscription with: {}".format(subscription_tuple))
