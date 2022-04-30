@@ -76,8 +76,8 @@ def create_user(sql_cursor, user_data, usr_pass, db_conn):
 
     # TODO: Move user account creationg to a single batch transaction to be rolled/unrolled
     if (not ret):
-	    print("Creating customer account failed.")
-	    return None
+        print("Creating customer account failed.")
+        return None
 
     print("Try to create customer subscription for user: ", user_db_id)
     create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data)
@@ -278,7 +278,7 @@ def create_customer_account_db(sql_cursor, user_db_id, user_data):
 def create_customer_subscription_db(sql_cursor, user_db_id, timestamp, user_data):
 
     # TODO add subscription active column - or always calcualte on the fly?
-    add_user_default_subscription_q = """INSERT INTO customer_subscriptions (CUSTOMER_ID, is_valid, subscription_type, validity_start, validity_end) VALUES (%s, %s, %s, %s, %s);"""
+    add_user_default_subscription_q = """INSERT INTO customer_subscriptions (customer_id, is_valid, subscription_type, validity_start, validity_end) VALUES (%s, %s, %s, %s, %s);"""
     subscription_tuple = (user_db_id, 0, DAILY_SUBSCRIPTION_TYPE, timestamp, timestamp)
     print("creating subscription with: {}".format(subscription_tuple))
     
