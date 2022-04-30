@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> StudyHub Doorguy </title>
+
+    <!-- Font Icon -->
+    <!-- <link rel="stylesheet" href="fonts/material-icon/css/material-design-iconic-font.min.css"> -->
+
+    <!-- Main css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+</head>
+<body>
+
+    <div class="main">
+
+        <!-- Sign up form -->
+        <section class="signup">
+            <div class="container">
+                <div class="signup-content">
+                    <div class="signup-form">
+                        <h2 class="form-title"> Change Password </h2>
+
+                        <!-- Feedback thingy-->
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        {% for message in messages %}
+                            <div role="alert" style="color: red;">
+                            {{message}}
+                            </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+
+                        <form method="POST" class="register-form" id="register-form" action="change_pass">
+                            <div class="form-group">
+                                <label for="username"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                <input type="text" name="old_pass" id="old_pass" placeholder="Old password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                <input type="text" name="new_pass" id="namnew_passe" placeholder="New pasword" required>
+                            </div>
+                            <div class="form-group">
+                              <label for="uni"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                              <input type="text" name="new_pass_re" id="new_pass_re" placeholder="Confirm new password" required>
+                          </div>
+                            <div class="form-group form-button">
+                                <input type="submit" name="change_pass" id="change_pass" class="form-submit" value="Change password"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="signup-image">
+                        <figure><img src="static/images/logo.png" alt="sing up image"></figure>
+                        
+                        <a href="login" class="signup-image-link">I am already member</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>
