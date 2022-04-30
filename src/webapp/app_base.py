@@ -169,14 +169,29 @@ def show_homepage():
     else:
         flash("You need to login.")
         return render_template('login_page.html')
-        
+
 @app.route("/update_sub", methods = ['GET'])
 def show_update_subscription():
-    return render_template("subscription_management_page.html")
+
+     ## TODO map this session key to actual user - either through OBJ in memory or write session key to DB
+    # as we'd _really_ like to know who logged in, so we can 
+    if "user" in session:
+        return render_template("subscription_management_page.html")
+    else:
+        flash("You need to login.")
+        return render_template('login_page.html')
+
 
 @app.route('/change_pass', methods = ['GET']) #
 def show_change_pass():
-    return render_template("change_pass_page.html")
+
+     ## TODO map this session key to actual user - either through OBJ in memory or write session key to DB
+    # as we'd _really_ like to know who logged in, so we can 
+    if "user" in session:
+        return render_template("change_pass_page.html")
+    else:
+        flash("You need to login.")
+        return render_template('login_page.html')
 
 
 app.run(host="0.0.0.0",port=5000)
