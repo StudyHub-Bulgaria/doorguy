@@ -67,6 +67,7 @@ def recover_passwrd():
     # Save tokens to DB with validity range of 15 mins
     # Afterr success or 15 mins, wipe token?
 
+# TODO: Handle remember me functionality?
 # Route user to authentication
 # if user logs in successfully, set session key unique to user
 #  and show either wrong username/password or home page
@@ -166,5 +167,16 @@ def show_homepage():
         flash(user_code_location)
         return render_template('home_page.html')
     else:
-        return "You need to login."
+        flash("You need to login.")
+        return render_template('login_page.html')
+        
+@app.route("/update_sub", methods = ['GET'])
+def show_update_subscription():
+    return render_template("subscription_management_page.html")
+
+@app.route('/change_pass', methods = ['GET']) #
+def show_change_pass():
+    return render_template("change_pass_page.html")
+
+
 app.run(host="0.0.0.0",port=5000)
