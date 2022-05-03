@@ -182,16 +182,47 @@ def show_update_subscription():
         return render_template('login_page.html')
 
 
-@app.route('/change_pass', methods = ['GET']) #
-def show_change_pass():
+# Change a users password if its valid
+def change_user_password():
+    # TOOD: If user's password is correct
+    try:
+        old_pass = request.form.get('old_pass')
+        new_pass = request.form.get('new_pass')
+        if (new_pass != old_pass):
+            return "Password mismatch!"
 
-     ## TODO map this session key to actual user - either through OBJ in memory or write session key to DB
-    # as we'd _really_ like to know who logged in, so we can 
+        return "Your password will be changed in 17 business days."
+    except Exception as e:
+        print("Some passsword was not input!!")
+        return None
+    # TOOD If
+
+def show_change_pass():
     if "user" in session:
         return render_template("change_pass_page.html")
     else:
         flash("You need to login.")
         return render_template('login_page.html')
+
+@app.route('/change_pass', methods = ['GET', 'POST']) #
+def change_password_handler():
+
+    if request.method == 'POST':
+        res = change_user_password()
+        if (res):
+            flash("Password changed successfully!")
+        else:
+            flash("Password change failed!")
+        return show_change_pass()
+    else:
+        return show_change_pass()
+     ## TODO map this session key to actual user - either through OBJ in memory or write session key to DB
+    # as we'd _really_ like to know who logged in, so we can 
+    # if "user" in session:
+    #     return render_template("change_pass_page.html")
+    # else:
+    #     flash("You need to login.")
+    #     return render_template('login_page.html')
 
 
 app.run(host="0.0.0.0",port=5000)
