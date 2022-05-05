@@ -20,7 +20,7 @@ MONTHLY_SUBSCRIPTION_TYPE = 3
 NONSTUDENT_MONTLY_SUBSCRIPTION_TYPE = 4
 SEMESTER_SUBSCRIPTION_TYPE = 5
 
-# Todo create APIs to wrap this and have everything work with user object?
+# TODO create APIs to wrap this and have everything work with user object?
 class User_profile():
 
     def __init__(self, name, username, uuid, pass_hash, email):
@@ -35,6 +35,13 @@ class User_profile():
         self.phone_number = ""
         self.zkteco_id = 0
 
+# TODO Fix up this class
+class home_page_data():
+    def __init__(self):
+        self.real_name = ""
+        self.username = ""
+        self.subscribtion_valid = False
+        self.subscribtion_end_date = ""
 
 # Get a random 64 byte string in hex
 def generate_secret_key():
@@ -52,6 +59,13 @@ def get_current_mysql_time(sql_cursor):
 
     time = time.time()
     return time
+
+
+# TODO Given the user logged in session cookie, fetch their DB UID
+def get_user_uid_from_sessions_key(session_key):
+
+    return 39
+
 
 ## TODO: checkout zkteco id mapping if any
 ## Wrapper over user creation functoins
@@ -118,6 +132,24 @@ def connect_db():
         print("[error] Could not connect to mysql database. Please check your configuration, if your database is up and if your user has permissions.")
         exit(-2)
 
+
+# TODO: Decide wether to pass UIDs or username and get uids here
+# Check if a given user has a subscription already or this is a fresh haccount
+def user_has_subscription(uid):
+    # Check if a user has a valid code to show them
+    sub_query = "SELECT , active, validity_start, validity_end FROM customer_subscriptions"
+    # TODO Execute query
+
+    # if not, show them some generic thing?
+    return False
+
+
+# TODO: implement DB queries
+# Change a users password if its valid
+def change_user_password(old_pass, new_pass, uid):
+
+    
+    return true
 # Some sanity checks for user password
 def validate_user_password(usr_pass, re_pass):
     print("[debug] Validating user password: ", usr_pass)
