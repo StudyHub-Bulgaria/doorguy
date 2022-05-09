@@ -175,7 +175,7 @@ def show_home_page():
         flash("You need to login.")
         return render_template('login_page.html')
 
-@app.route("/update_sub", methods = ['GET'])
+@app.route("/manage_sub", methods = ['GET'])
 def show_update_subscription():
 
      ## TODO map this session key to actual user - either through OBJ in memory or write session key to DB
