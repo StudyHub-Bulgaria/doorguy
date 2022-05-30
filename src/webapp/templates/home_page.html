@@ -7,8 +7,7 @@
 		<title>StudyHub Portal</title>
 		
 		<meta name="viewport" content="initial-scale=1, maximum-scale=2" />
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/home_card.css') }}">
-		
+						
 		</head>
 	
 
@@ -18,40 +17,50 @@
 
 			<div style=" padding: 50px; padding-top: 20px; padding-bottom: 0;text-align: center;">
 			
-                <h3> Welcome USERNAME!</h3>
-                
-                
-                <ul class="card-wrapper">
-                <li class="card">
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                <div role="alert" style="color: red;">
-                                    <img src="{{message}}">
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                    <img src='' alt="pic1" >
-                    <h3><a href=""> Hello mr name lastname </a></h3>
-                    <p> Your card expires on: 01/01/1970 Lorem ipsum sit dolor amit </p>
-                </li>
-            </div>
-                
-        </div>
+                <h3> Welcoem HOME!</h3>
 
-        <p> TODO: Button area  </p>
-        <!-- TODO: This should  -->
-        <form method="GET" class="register-form" id="change-pass-form" action="change_pass">
-            <div class="form-group form-button">
-                <input type="submit" class="form-submit" value="Change password "/>
-            </div>
-        </form>
-        <form method="GET" class="register-form" id="login-form" action="manage_sub">
-        <div class="form-group form-button">
-            <input type="submit"  class="form-submit" value="Manage Subscription"/>
-        </div>
-        </form>
-    </body>
+			<span> This is a wrapper of your personal card
+				<div> 
+					<p> Hello NAME,LASTNAME</p>
+
+					<p> <i> Your card expires on </i> 10.02.2021 15:23 </p>
+
+						<!-- have qr here? -->
+
+						<div >
+							<h2 > your qr code</h2>
+							<div>
+							{% with messages = get_flashed_messages() %}
+							{% if messages %}
+							  {% for message in messages %}
+								<div role="alert" style="color: red;">
+									<img src="{{message}}">
+								</div>
+								  <!-- {{message}} -->
+								<!-- </div> -->
+							  {% endfor %}
+							{% endif %}
+						  {% endwith %}
+							</div>
+						</div>
+					<!-- <div> -->
+						<!-- <img src="static/images/qr.png"> -->
+					<!-- </div> -->
+						<!-- <img src="{{ url_for('static', filename='images/qr.png') }}" class="qr-code"> -->
+
+				</div>
+			</span>
+			</div>
+		<!-- more js calendar shit? -->
+			<!-- <script src="https://studyhub.bg/lumiere/js/scroll.js"></script> -->
+			
+<!-- 
+		<link href="https://studyhub.bg/lumiere/dist/css/window-date-picker.css" rel="stylesheet">
+		<script src="https://studyhub.bg/lumiere/dist/js/window-date-picker.js"></script> -->
+			
+	</body>
+
 
 </html>
+		<!-- WHY WERE THERE TWO OF THESE -->
+

@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title> Studyhub doorguy </title>
+    <title>Sign Up Form by Colorlib</title>
+
+    <!-- Font Icon -->
+    <!-- <link rel="stylesheet" href="fonts/material-icon/css/material-design-iconic-font.min.css"> -->
 
     <!-- Main css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
@@ -13,30 +16,36 @@
 
 <body>
 
-    
+    <div class="main">
 
-        <center>
-        <div class="main">
         <!-- Sign up form -->
         <section class="signup">
             <div class="container">
                 <div class="signup-content">
                     <div class="signup-form">
-                    <center>
-                        <h2 class="form-title"> Welcome to StudyHub Portal </h2>
-                        <p> TODO: description of how to use</p>
-                        <div class="form-group form-button"> 
-                            <form action="/login" method="get">
-                                <button formaction="/login" class="form-submit" type="submit">Login</button>
-                                <button formaction="/register" class="form-submit" type="submit"> Register</button>
-                            </form>
-                        </div> 
-                    </div>                   
-                    </center>
+                        <h2 class="form-title"> Welcome to our LANDING page</h2>
+                        <p> description of how to use</p>
+                        <!-- <div class="form-group form-button"> -->
+                        <form action="login" method="get">
+                            <button class="form-submit" type="submit">Login</button>
+                        </form>
+                        <form action="register" method="get">
+                            <button class="form-submit" type="submit">Register</button>
+                        </form>
+                        <!-- </div> -->
+                    </div>
+                    <div>
+                        <!-- <figure><img src="images/signup-image.jpg" alt="sing up image"></figure> -->
+                        <a href="login" class="signup-image-link">I am already member</a>
+                    </div>
+
+                    <div>
+                        <a href="register" class="signup-image-link">Create an account</a>
+                        <!-- <figure><img src="images/signin-image.jpg" alt="sing up image"></figure> -->
+                    </div>
                 </div>
             </div>
         </section>
-         </center>
 
         <!-- JS -->
         <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
