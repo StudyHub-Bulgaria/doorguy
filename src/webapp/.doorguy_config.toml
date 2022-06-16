@@ -1,7 +1,0 @@
-# Our config file
-
-[database]
-user = "doorguy"
-pass = "dev123"
-host = "localhost"
-db_name = "doorguy_dev"
