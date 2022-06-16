@@ -7,7 +7,8 @@
 		<title>StudyHub Portal</title>
 		
 		<meta name="viewport" content="initial-scale=1, maximum-scale=2" />
-						
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/home_card.css') }}">
+
 		</head>
 	
 
@@ -19,45 +20,26 @@
 			
                 <h3> Welcoem HOME!</h3>
 
-			<span> This is a wrapper of your personal card
-				<div> 
-					<p> Hello NAME,LASTNAME</p>
 
-					<p> <i> Your card expires on </i> 10.02.2021 15:23 </p>
-
-						<!-- have qr here? -->
-
-						<div >
-							<h2 > your qr code</h2>
-							<div>
-							{% with messages = get_flashed_messages() %}
-							{% if messages %}
-							  {% for message in messages %}
-								<div role="alert" style="color: red;">
-									<img src="{{message}}">
-								</div>
-								  <!-- {{message}} -->
-								<!-- </div> -->
-							  {% endfor %}
-							{% endif %}
-						  {% endwith %}
-							</div>
-						</div>
-					<!-- <div> -->
-						<!-- <img src="static/images/qr.png"> -->
-					<!-- </div> -->
-						<!-- <img src="{{ url_for('static', filename='images/qr.png') }}" class="qr-code"> -->
+                <ul class="card-wrapper">
+                <li class="card">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div role="alert" style="color: red;">
+                                    <img src="{{message}}">
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <img src='' alt="pic1" >
+                    <h3><a href=""> Hello mr name lastname </a></h3>
+                    <p> Your card expires on: 01/01/1970 Lorem ipsum sit dolor amit </p>
+                </li>
 
 				</div>
 			</span>
 			</div>
-		<!-- more js calendar shit? -->
-			<!-- <script src="https://studyhub.bg/lumiere/js/scroll.js"></script> -->
-			
-<!-- 
-		<link href="https://studyhub.bg/lumiere/dist/css/window-date-picker.css" rel="stylesheet">
-		<script src="https://studyhub.bg/lumiere/dist/js/window-date-picker.js"></script> -->
-			
 	</body>
 
 

@@ -119,6 +119,9 @@ def show_homepage():
         # Get info on which user from session key?
         user_id = 3
         user_code_location = get_user_code_filename(user_id)
+
+        # hacked
+        user_code_location = "/static/images/qrcode.png"
         ## TEST
         # user_code = hashlib.sha512("Some data taht should be encoded".encode()).hexdigest()
         # fqr = generate_user_code("Some data taht should be encoded".encode())
