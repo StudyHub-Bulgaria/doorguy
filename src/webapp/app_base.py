@@ -176,4 +176,9 @@ def show_change_pass_page():
             flash("You need to be logged in.")
             return render_template("login_page.html")
 
+@app.route('/how-it-works', methods= ['GET'])
+def show_guide_page():
+    return render_template("how_to_page.html")
+
+
 app.run(host="0.0.0.0",port=5000)
