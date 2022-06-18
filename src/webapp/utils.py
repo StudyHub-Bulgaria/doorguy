@@ -149,7 +149,8 @@ def user_has_subscription(uid):
 def change_user_password(old_pass, new_pass, uid):
 
     
-    return true
+    return True
+    
 # Some sanity checks for user password
 def validate_user_password(usr_pass, re_pass):
     print("[debug] Validating user password: ", usr_pass)

@@ -154,12 +154,26 @@ def show_forgot_pass_page():
 
 @app.route('/change_password', methods = ['GET', 'POST'])
 def show_change_pass_page():
+
     # TODO: This has to be behind auth
-    if "user" in session:
-        logged_in_user = session["user"]
-        return render_template("change_pass_page.html")
-    else:
-        flash("You need to be logged in.")
-        return render_template("login_page.html")
+    if (request.method == "GET"):
+        if "user" in session:
+            logged_in_user = session["user"]
+            return render_template("change_pass_page.html")
+        else:
+            flash("You need to be logged in.")
+            return render_template("login_page.html")
+    if (request.method == "POST"):
+        if "user" in session:
+            flash("This feature is currently under construction.")
+            
+            # TOOD: Get user pass from db, validate old pass, update to new pass if okay
+            logged_in_user = session["user"]
+
+            
+            return render_template("change_pass_page.html")
+        else:
+            flash("You need to be logged in.")
+            return render_template("login_page.html")
 
 app.run(host="0.0.0.0",port=5000)
