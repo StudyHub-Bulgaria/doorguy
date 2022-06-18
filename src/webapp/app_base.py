@@ -120,15 +120,46 @@ def show_homepage():
         user_id = 3
         user_code_location = get_user_code_filename(user_id)
 
-        # hacked
+        # TODO: get this form DB
         user_code_location = "/static/images/qrcode.png"
+
+        # Setup some data to be shown in pag
+        user_data = "Some user data to be accesed"
+        full_name = "John Doe 361"
+        qr = user_code_location
+
+        data = {}
+        data["email"] = "johndoe@abv.bg"
+        data["username"] = "johndoe361"
         ## TEST
         # user_code = hashlib.sha512("Some data taht should be encoded".encode()).hexdigest()
         # fqr = generate_user_code("Some data taht should be encoded".encode())
-        # flash(fqr)
     
-        flash(user_code_location)
-        return render_template('home_page.html')
+        # flash(user_code_location)
+        return render_template('home_page.html', full_name=full_name, qr_loc=qr, data=data)
     else:
-        return "You need to login."
+        flash("You need to login.")
+        return render_template('login_page.html')
+
+@app.route('/forgot_password', methods = ['GET', 'POST'])
+def show_forgot_pass_page():
+	if request.method == "GET":
+		return render_template("password_recovery_page.html")
+	if  request.method == "POST":
+		email = "dummy@no.domain"
+		flash("A recovery email has been sent to {}".format(email))
+		return render_template("password_recovery_page.html")
+
+
+
+@app.route('/change_password', methods = ['GET', 'POST'])
+def show_change_pass_page():
+    # TODO: This has to be behind auth
+    if "user" in session:
+        logged_in_user = session["user"]
+        return render_template("change_pass_page.html")
+    else:
+        flash("You need to be logged in.")
+        return render_template("login_page.html")
+
 app.run(host="0.0.0.0",port=5000)
