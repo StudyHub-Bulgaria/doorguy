@@ -13,6 +13,10 @@ import qrcode
 import time
 from ecdsa import SigningKey
 
+
+## our stuff
+from sql_queries import *
+
 # Subscription types
 DAILY_SUBSCRIPTION_TYPE = 1
 WEEKLY_SUBSCRIPTION_TYPE = 2
@@ -246,10 +250,28 @@ def get_user_qr_code_path_db(username):
     qr_path = "/tmp/user_qr_demo_path"
     return "qr_path"
 
+# TODO: Get user DB index from login token thing
+def get_user_id_from_token(sql_cursor, token):
+    return token
+
+# Get user expiration date from db
+def get_sub_expire_date_db(sql_cursor, user_id):
+    sql_cursor.execute(SUBSCRIPTION_EPXIRE_DATE_Q, user_id)
+    expire_date =  sql_cursor.fetchone()
+    print("usr: {} EXPIRE DATE: {} ".format(user_id, expire_date))
+    return expire_date[0]
+
 # Given user id, get QR code filename from DB
 def get_user_code_filename(user_id):
     # Get qr_code_filename from customer SQL()
     return "qrcode_test.png"
+
+
+def get_user_id_by_user_name(sql_cursor, usr_name):
+    sql_cursor.execute(SELECT_CUSTOMER_ID_BY_USERNAME_Q, (usr_name,))
+    user_id = sql_cursor.fetchone()
+    return user_id
+
 
 # Given username, return user uuid hash from DB
 def get_user_uuid_db(usr_name):

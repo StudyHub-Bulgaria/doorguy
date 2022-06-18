@@ -1,6 +1,8 @@
 from flask.json import jsonify
 from flask import Flask,render_template, request, flash, session, redirect, url_for
 from datetime import timedelta
+import datetime
+
 from utils import *
 import jwt
 import os
@@ -59,8 +61,11 @@ def login_attempt():
         # maybe keep a global dict() of user_sesison_key:user_id? 
         temp_key = secrets.token_hex()
         # temp_key = get_user_uuid(usr_name)
-        sk = base64.b64encode(temp_key.encode())
-        session["user"] = sk
+
+        ## TODO:
+        # sk = base64.b64encode(temp_key.encode())
+        ## TODO: set UUIDs in to foreign DB
+        session["user"] = get_user_id_by_user_name(sql_cursor_obj, usr_name)
 
         # This is needed for sessions to time out, otherwise the die _only_ on browser closing
         session.permanent = True
@@ -131,6 +136,14 @@ def show_homepage():
         data = {}
         data["email"] = "johndoe@abv.bg"
         data["username"] = "johndoe361"
+
+        user_id = logged_in_user
+        if (not user_id):
+            print("HUGE ERROR, USER ID NOT FOUND")
+            
+        timestamp = get_sub_expire_date_db(sql_cursor_obj, user_id)
+        human_date = datetime.fromtimestamp(timestamp).isoformat()
+        data["date_expire"] = human_date
         ## TEST
         # user_code = hashlib.sha512("Some data taht should be encoded".encode()).hexdigest()
         # fqr = generate_user_code("Some data taht should be encoded".encode())
@@ -150,7 +163,16 @@ def show_forgot_pass_page():
 		flash("A recovery email has been sent to {}".format(email))
 		return render_template("password_recovery_page.html")
 
+def show_login_access_denied():
+    flash("You need to be logged in.")
+    return render_template("login_page.html")
 
+@app.route('/manage_subscription')
+def show_manage_sub_page():
+    if "user" in session:
+        return render_template("subscription_management_page.html")
+    else:
+        return show_login_access_denied()
 
 @app.route('/change_password', methods = ['GET', 'POST'])
 def show_change_pass_page():
@@ -161,8 +183,7 @@ def show_change_pass_page():
             logged_in_user = session["user"]
             return render_template("change_pass_page.html")
         else:
-            flash("You need to be logged in.")
-            return render_template("login_page.html")
+           return show_login_access_denied()
     if (request.method == "POST"):
         if "user" in session:
             flash("This feature is currently under construction.")

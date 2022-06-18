@@ -8,6 +8,7 @@
 		
 		<meta name="viewport" content="initial-scale=1, maximum-scale=2" />
         <link rel="stylesheet" href="{{ url_for('static', filename='css/home_card.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 
 		</head>
 	
@@ -37,14 +38,14 @@
                     </div>
                    
                     <img src='' alt="pic1" >
-                    <h3><a href=""> Hello {{full_name}} </a></h3>
-                    <p> Your card expires on: 01/01/1970 Lorem ipsum sit dolor amit </p>
+                    <h3>Hello {{full_name}} </h3>
+                    <p> Your card is valid until: {{data.date_expire}} </p>
                     <p> Username: {{data.username}} </p>
                     <p> Email: {{data.email}} </p>
 
                     <div>
-                        <a href="change_password"> Change Password </a>
-                        <!-- <a href="register" >Create an account</a> -->
+                        <a class="form-submit" href="change_password"> Change Password </a>
+                        <a class="form-submit" href="manage_subscription"> Manage your subscription</a>
                     </div>
                 </li>
 
