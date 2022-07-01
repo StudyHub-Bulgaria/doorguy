@@ -3,6 +3,7 @@ import datetime
 import logging
 import json
 import secrets
+from ecdsa import SigningKey, VerifyingKey
 
 ## Configure logger object
 # web_log = logging.getLogger("vratar_auth_log")
@@ -21,10 +22,16 @@ app.config['PERMANENT_SESSION_LIFETIME'] =  datetime.timedelta(minutes=15)
 # Setup secret key
 app.secret_key = secrets.token_hex()
 
+# Prep ECDSA keys Proof of concept
+sk = SigningKey.generate() # Use some nist curve?
+vk = sk.verifying_key
+
+def ecdsa_sign_string(sign_key, data):
+    sig = sign_key.sign(data.encode())
+    return sig
 
 def get_timestamp_now():
     return int(datetime.datetime.timestamp(datetime.datetime.now()))
-
 
 # Check if validity timestamp in request is okay
 def req_timestamp_okay(timestamp):
@@ -35,13 +42,16 @@ def req_timestamp_okay(timestamp):
         return True
 
 # Defaul auth endpoint
-@app.route('/', methods =['POST'])
+@app.route('/', methods =['GET','POST'])
 def base_auth_endpoitn():
 
     resp = {}
     if (request.method == 'GET'):
-        resp = {"status": "Invalid request"}
-        return json.dumps(resp) 
+        global sk
+        default_str = "Some user data PII bla bla"
+        sig = ecdsa_sign_string(sk,default_str)
+        print("Sig has type: ", type(sig))
+        return create_auth_request("john_doe367", default_str, sig.hex())
     else:
         req_data = request.get_json()
         return "You sent data"
@@ -65,6 +75,14 @@ def authenticate_request(auth_data):
             temp["reason"] = "Validity timestamp expired"
         return temp
 
+
+
+# Created request is valid for 15 mins
+def create_auth_request(user_name,data, signature):
+    now = get_timestamp_now() + 900
+    temp = {"validity": now, "username":user_name,"data":data, "sig": signature}
+    return json.dumps(temp)
+
 @app.route('/authenticate', methods =['POST'])
 def auth_me():
 
@@ -77,6 +95,5 @@ def auth_me():
         resp = authenticate_request(req_data)
 
         return jsonify(resp)
-
 
 app.run(host="0.0.0.0",port=4000)
