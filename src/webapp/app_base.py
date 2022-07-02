@@ -122,19 +122,16 @@ def show_homepage():
 
         # TODO: set variable here to show user qr code
         # Get info on which user from session key?
-        user_id = 3
-        user_code_location = get_user_code_filename(user_id)
-
-        # TODO: get this form DB
-        user_code_location = "/static/images/qrcode.png"
+        user_id = logged_in_user
+        qr_fnmae = get_user_code_filename(sql_cursor_obj, user_id)
+        qr_loc = "/static/images/{}".format(qr_fnmae)
+        print("Used qr code location: ", qr_loc)
 
         # Setup some data to be shown in pag
         user_data = "Some user data to be accesed"
         full_name = "John Doe 361"
-        qr = user_code_location
 
         data = {}
-        data["email"] = "johndoe@abv.bg"
         data["username"] = "johndoe361"
 
         user_id = logged_in_user
@@ -144,12 +141,15 @@ def show_homepage():
         timestamp = get_sub_expire_date_db(sql_cursor_obj, user_id)
         human_date = datetime.fromtimestamp(timestamp).isoformat()
         data["date_expire"] = human_date
+        data["qr_loc"] = qr_loc
+
+        # data["email"] = "johndoe@abv.bg"
         ## TEST
         # user_code = hashlib.sha512("Some data taht should be encoded".encode()).hexdigest()
         # fqr = generate_user_code("Some data taht should be encoded".encode())
     
         # flash(user_code_location)
-        return render_template('home_page.html', full_name=full_name, qr_loc=qr, data=data)
+        return render_template('home_page.html', full_name=full_name, data=data)
     else:
         flash("You need to login.")
         return render_template('login_page.html')

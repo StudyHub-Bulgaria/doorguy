@@ -136,12 +136,10 @@ def connect_db():
         print("[error] Could not connect to mysql database. Please check your configuration, if your database is up and if your user has permissions.")
         exit(-2)
 
-
-# TODO: Decide wether to pass UIDs or username and get uids here
 # Check if a given user has a subscription already or this is a fresh haccount
-def user_has_subscription(uid):
+def user_has_subscription(sql_cursor,user_id):
     # Check if a user has a valid code to show them
-    sub_query = "SELECT , active, validity_start, validity_end FROM customer_subscriptions"
+    sql_cursor.execute(USER_HAS_SUBSRIPTION_Q, (user_id,))
     # TODO Execute query
 
     # if not, show them some generic thing?
@@ -192,28 +190,23 @@ def validate_user_registration_data(user_data, input_pass, confirm_pass):
 
 # TODO: index DB by username
 # Get hash of user pass from DB
-def get_user_pass_db(sql_cursor, username):
+def get_user_pass_db(sql_cursor, user_id):
 
-    # Because SQL conenctor wants tuples
-    user_name = (username,)
-    user_id_query = "SELECT customer_id FROM customer_accounts WHERE username = %s"
-    sql_cursor.execute(user_id_query, user_name)
-    user_id_tuple =  sql_cursor.fetchone()
-    if (user_id_tuple == None):
-        return None
-
-    get_query = ("SELECT password FROM customer_accounts WHERE customer_id = %s")
-    sql_cursor.execute(get_query, user_id_tuple)
+    sql_cursor.execute(GET_USER_PASSWORD_Q, user_id)
     user_pass = sql_cursor.fetchone()
-
     if (user_pass):
         return user_pass[0]
     else:
         return None
 
-def try_login_user(sql_cursor, username, pass_input):
+# Login a user into the system
+def try_login_user(sql_cursor, user_name, pass_input):
+    sql_cursor.execute(SELECT_CUSTOMER_ID_BY_USERNAME_Q, (user_name,))
+    user_id =  sql_cursor.fetchone()
+    if (user_id == None):
+        return False
 
-    pass_hash = get_user_pass_db(sql_cursor, username)
+    pass_hash = get_user_pass_db(sql_cursor, user_id)
     if (pass_hash):
         if (bcrypt.checkpw(pass_input.encode(), pass_hash.encode())):
             return True
@@ -254,23 +247,23 @@ def get_user_qr_code_path_db(username):
 def get_user_id_from_token(sql_cursor, token):
     return token
 
-# Get user expiration date from db
+# Get user subscription expiration timestamp from db
 def get_sub_expire_date_db(sql_cursor, user_id):
-    sql_cursor.execute(SUBSCRIPTION_EPXIRE_DATE_Q, user_id)
+    sql_cursor.execute(SUBSCRIPTION_EPXIRE_DATE_Q, (user_id,))
     expire_date =  sql_cursor.fetchone()
-    print("usr: {} EXPIRE DATE: {} ".format(user_id, expire_date))
     return expire_date[0]
 
 # Given user id, get QR code filename from DB
-def get_user_code_filename(user_id):
-    # Get qr_code_filename from customer SQL()
-    return "qrcode_test.png"
+def get_user_code_filename(sql_cursor, user_id):
+    sql_cursor.execute(GET_USER_QR_CODE_PATH_Q, (user_id,))
+    filename = sql_cursor.fetchone()
+    return filename[0]
 
-
+# Return user UUID from DB by their username
 def get_user_id_by_user_name(sql_cursor, usr_name):
     sql_cursor.execute(SELECT_CUSTOMER_ID_BY_USERNAME_Q, (usr_name,))
     user_id = sql_cursor.fetchone()
-    return user_id
+    return user_id[0]
 
 
 # Given username, return user uuid hash from DB
