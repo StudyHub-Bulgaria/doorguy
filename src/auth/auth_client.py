@@ -12,7 +12,8 @@ import time
 from os import getenv
 
 # Timer stuff
-from heartbeat import MAX_HB_TIMEOUTS, HeartBeat, HEART_RATE
+from heartbeat import MAX_HB_TIMEOUTS, HEART_RATE, RepeatTimer
+from heartbeat import DOORGUY_VER
 
 ### Global config stuff - to get from config
 server_ip = "127.0.0.1"
@@ -36,38 +37,38 @@ def get_timestamp_now():
     return int(datetime.datetime.timestamp(datetime.datetime.now()))
 
 ## Schema loosely like timestamp, door id, 
-def create_auth_request(user_name, data, signature, door_id):
+def create_auth_request(data, signature, door_id):
     now = get_timestamp_now()
-    temp = {"timestamp": now, "door_id":door_id, "sig":signature}
+    temp = {"ver":DOORGUY_VER, "door_id":door_id, "data":data, "sig":signature}
     return temp
-    # req = json.dumps(temp)
 
 # Send auth request to server
 def send_auth_request(server_ip, port,payload):
-    s = 30
-    server = "{}:{}".format(server_ip, port)
+    server_uri = "http://{}:{}/authenticate".format(server_ip, server_port)
     req_headers = {}
-    r = requests.post(server, 
-        headers=req_headers,
-        data=json.dumps(payload)
-    )
+    try:
+        r = requests.post(server_uri, 
+            headers=req_headers,
+            json=json.dumps(payload)
+        )
+    except Exception as e:
+        print("[ERROR] Failed to deliver auth request...heartbeats should catch this?")
 
 ## Parse client's QR code - move code from camera_utils here?
 def parse_client_code():
     s = 30
 
-# Created request is valid for 15 mins
-def create_auth_request(user_name,data, signature):
-    now = get_timestamp_now() + 900
-    temp = {"validity": now, "username":user_name,"data":data, "sig": signature}
-    return json.dumps(temp)
-
+## Shortcut to sending auth reqeusts - for testing
+def request_auth_test():
+    global client_id, server_ip, server_port
+    data = create_auth_request("some-data", "some-signature-data", client_id)
+    f = send_auth_request(server_ip, server_port, data)
+    # print("[DBG] sending auth request: ", data)
 
 # Ping server every so often 
 # TODO: Add retry and notifications
 def send_heartbeat(server_ip, port):
     global srv_timeouts, client_id
-    print("[DBG] trying to hit server ", server_ip)
     server_uri = "http://{}:{}/heartbeat".format(server_ip, server_port)
     try:
         r = requests.post(server_uri, verify=False, timeout=2, json={"id":client_id})
@@ -85,12 +86,14 @@ def send_heartbeat(server_ip, port):
 def main_loop():
     global server_ip, server_port, client_id
     client_id = get_client_id()
-    print("[autch client {}] running just heartbeats against {}:{}".format(client_id, server_ip, server_port))
+    print("[autch client {}] running heartbeats and test auth against {}:{}".format(client_id, server_ip, server_port))
     
     ## Start a heartbeat timer
-    timer = HeartBeat(HEART_RATE, send_heartbeat, [server_ip, server_port])
-    timer.start()
+    hb_timer = RepeatTimer(HEART_RATE, send_heartbeat, [server_ip, server_port])
+    # hb_timer.start()
     
-    # Do the image processing shit
-
+    # TODO: Do the image processing shit
+    # Loop sending auth mesages
+    auth_req_timer = RepeatTimer(5, request_auth_test)
+    auth_req_timer.start()
 main_loop()

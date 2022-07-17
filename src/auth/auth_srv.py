@@ -6,6 +6,7 @@ import secrets
 from ecdsa import SigningKey, VerifyingKey
 from threading import Thread, Timer
 
+from heartbeat import DOORGUY_VER
 ## Configure logger object
 # web_log = logging.getLogger("vratar_auth_log")
 
@@ -14,6 +15,10 @@ from threading import Thread, Timer
 # this will make _ALL_ things log there Enable logging to /tmp/test.log
 #logging.basicConfig(filename='/tmp/test.log', level=logging.INFO)
 
+## Only log erros?
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 AUTH_SRV_PORT = 6092
 
@@ -50,7 +55,6 @@ def req_timestamp_okay(timestamp):
 def base_auth_endpoitn():
     return {"fake_data":"00005123"}
 
-
 # Get client id from request20
 def process_hearbeat(hb_data):
     now = datetime.datetime.now()
@@ -68,23 +72,31 @@ def collect_hearbeats():
     resp = process_hearbeat(req_data)
     return "Okay"
 
-# Main auth parsing verifying routine
+# TODO run a separate logger just for this with custom output
+def log_auth_request(auth_data):
+    print("[DBG] received auth request: ", auth_data)
+
 def authenticate_request(auth_data):
+    return True
+
+# Main auth parsing verifying routine
+def process_auth_request(auth_data):
     temp = {}
-    timestamp = auth_data.get("validity")
-    if (not timestamp):
-        temp["status"] = "fail"
-        temp["reason"] = "Timestamp invalid"
-        return temp
-    else:
-        reason = req_timestamp_okay(int(timestamp))
-        if (reason):
-            temp["status"] = "ok"
-            temp["reason"] = "Validity ok"
-        else:
-            temp["status"] = "fail"
-            temp["reason"] = "Validity timestamp expired"
-        return temp
+    data = json.loads(auth_data)
+    # Log this
+    log_auth_request(data)
+
+    # Handle versioning
+    ver = data.get("ver")
+    if (ver != DOORGUY_VER):
+        print("[ERROR] Wrong doorguy version on client! {} != {}", ver, DOORGUY_VER)
+        # exit(1)
+
+    # Check data
+
+
+    # TODO: Process auth request?
+
 
 # Handle auth requests
 @app.route('/authenticate', methods =['POST'])
@@ -95,7 +107,7 @@ def auth_me():
         return json.dumps(resp) 
     else:
         req_data = request.get_json()
-        resp = authenticate_request(req_data)
+        resp = process_auth_request(req_data)
         return jsonify(resp)
 
 app.run(host="0.0.0.0",port=AUTH_SRV_PORT)

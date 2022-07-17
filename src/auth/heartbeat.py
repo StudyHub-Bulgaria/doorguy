@@ -6,9 +6,10 @@ import requests
 # Set rate of heartbeats in seconds
 HEART_RATE = 2
 MAX_HB_TIMEOUTS = 5
+DOORGUY_VER = "0.0.2"
 
 ## Wrapper over timer class to create a repeat timer
-class HeartBeat(Timer):
+class RepeatTimer(Timer):
     def run(self):
         while not self.finished.wait(self.interval):
             self.function(*self.args, **self.kwargs)
