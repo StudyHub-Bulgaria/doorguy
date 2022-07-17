@@ -16,10 +16,7 @@ from heartbeat import MAX_HB_TIMEOUTS, HeartBeat, HEART_RATE
 
 ### Global config stuff - to get from config
 server_ip = "127.0.0.1"
-server_port = "6902"
-backup_ip = "127.0.0.1"
-backup_port = "6040"
-timeouts = 0
+server_port = "6092"
 client_id = 0
 srv_timeouts = 0
 
@@ -28,7 +25,7 @@ def get_client_id():
     me = getenv("CLIENT_ID")
     if not me:
         print("Client ID not set, randomizing")
-        return randint(5,25)
+        return randint(50,100)
     return int(me)
 
 def ecdsa_sign_string(sign_key, data):
@@ -38,7 +35,6 @@ def ecdsa_sign_string(sign_key, data):
 def get_timestamp_now():
     return int(datetime.datetime.timestamp(datetime.datetime.now()))
 
-# Created request is valid for 15 mins
 ## Schema loosely like timestamp, door id, 
 def create_auth_request(user_name, data, signature, door_id):
     now = get_timestamp_now()
@@ -46,9 +42,7 @@ def create_auth_request(user_name, data, signature, door_id):
     return temp
     # req = json.dumps(temp)
 
-# Send to server
-## TODO: Try to send to servere
-# on timeout
+# Send auth request to server
 def send_auth_request(server_ip, port,payload):
     s = 30
     server = "{}:{}".format(server_ip, port)
@@ -72,11 +66,11 @@ def create_auth_request(user_name,data, signature):
 # Ping server every so often 
 # TODO: Add retry and notifications
 def send_heartbeat(server_ip, port):
-    global srv_timeouts 
+    global srv_timeouts, client_id
     print("[DBG] trying to hit server ", server_ip)
-    server_uri = "http://{}:{}/hearbeat".format(server_ip, server_port)
+    server_uri = "http://{}:{}/heartbeat".format(server_ip, server_port)
     try:
-        r = requests.post(server_uri, verify=False, timeout=2, json={"id":2})
+        r = requests.post(server_uri, verify=False, timeout=2, json={"id":client_id})
     except Exception as e:
         # print("Server {} timed out: {}, doing re-try stuff".format(server_uri, e))
         srv_timeouts += 1

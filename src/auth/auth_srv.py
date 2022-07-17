@@ -51,15 +51,17 @@ def base_auth_endpoitn():
     return {"fake_data":"00005123"}
 
 
+# Get client id from request20
 def process_hearbeat(hb_data):
     now = datetime.datetime.now()
-    srv_id = hb_data.get("id")
-    print("[{}] Client {} is alive and well".format(now, 3))
+    client_id = hb_data.get("id")
+    print("[DBG] ", hb_data)
+    print("[{}] Client {} is alive and well".format(now,  client_id))
     
     ## keep stats on the timers
     # If some client fails to respond within like 1-2 mins, notify me
 
-## Collect hearbeats from all endpoints
+## lect hearbeats from all endpoints
 @app.route('/heartbeat', methods =['POST'])
 def collect_hearbeats():
     req_data = request.get_json()
