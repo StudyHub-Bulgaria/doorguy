@@ -1,10 +1,12 @@
-from flask import Flask,jsonify,render_template, request, flash, session, redirect, url_for
+from flask import Flask,jsonify, request, abort
 import datetime
 import logging
 import json
 import secrets
 from ecdsa import SigningKey, VerifyingKey
+from threading import Thread, Timer
 
+from heartbeat import DOORGUY_VER
 ## Configure logger object
 # web_log = logging.getLogger("vratar_auth_log")
 
@@ -12,6 +14,13 @@ from ecdsa import SigningKey, VerifyingKey
 # TODO
 # this will make _ALL_ things log there Enable logging to /tmp/test.log
 #logging.basicConfig(filename='/tmp/test.log', level=logging.INFO)
+
+## Only log erros?
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+AUTH_SRV_PORT = 6092
 
 # Initialize flask constructor 
 app = Flask(__name__)
@@ -44,56 +53,67 @@ def req_timestamp_okay(timestamp):
 # Defaul auth endpoint
 @app.route('/', methods =['GET','POST'])
 def base_auth_endpoitn():
+    return {"fake_data":"00005123"}
 
-    resp = {}
-    if (request.method == 'GET'):
-        global sk
-        default_str = "Some user data PII bla bla"
-        sig = ecdsa_sign_string(sk,default_str)
-        print("Sig has type: ", type(sig))
-        return create_auth_request("john_doe367", default_str, sig.hex())
-    else:
-        req_data = request.get_json()
-        return "You sent data"
+# Get client id from request20
+def process_hearbeat(hb_data):
+    now = datetime.datetime.now()
+    client_id = hb_data.get("id")
+    print("[DBG] ", hb_data)
+    print("[{}] Client {} is alive and well".format(now,  client_id))
+    
+    ## keep stats on the timers
+    # If some client fails to respond within like 1-2 mins, notify me
 
+## lect hearbeats from all endpoints
+@app.route('/heartbeat', methods =['POST'])
+def collect_hearbeats():
+    req_data = request.get_json()
+    resp = process_hearbeat(req_data)
+    return "Okay"
 
-# Main auth routine
+# TODO run a separate logger just for this with custom output
+def log_auth_request(auth_data):
+    print("[DBG] received auth request: ", auth_data)
+
 def authenticate_request(auth_data):
+    sig = auth_data.get("sig")
+    print("authentication data: ", sig)
+    return True
+
+
+# Main auth parsing verifying routine
+def process_auth_request(auth_data):
     temp = {}
-    timestamp = auth_data.get("validity")
-    if (not timestamp):
-        temp["status"] = "fail"
-        temp["reason"] = "Timestamp invalid"
-        return temp
+    data = json.loads(auth_data)
+    # Log this
+    log_auth_request(data)
+
+    # Handle versioning
+    ver = data.get("ver")
+    if (ver != DOORGUY_VER):
+        print("[ERROR] version mismatch server: {} != cleint {}", ver, DOORGUY_VER)
+        return abort(500)
+
+    # Check data
+    if(authenticate_request(data)):
+        return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
     else:
-        reason = req_timestamp_okay(int(timestamp))
-        if (reason):
-            temp["status"] = "ok"
-            temp["reason"] = "Validity ok"
-        else:
-            temp["status"] = "fail"
-            temp["reason"] = "Validity timestamp expired"
-        return temp
+        return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
+
+    # TODO: Process auth request?
 
 
-
-# Created request is valid for 15 mins
-def create_auth_request(user_name,data, signature):
-    now = get_timestamp_now() + 900
-    temp = {"validity": now, "username":user_name,"data":data, "sig": signature}
-    return json.dumps(temp)
-
+# Handle auth requests
 @app.route('/authenticate', methods =['POST'])
 def auth_me():
-
     resp = {}
     if (request.method == 'GET'):
         resp = {"status": "Invalid request"}
         return json.dumps(resp) 
     else:
         req_data = request.get_json()
-        resp = authenticate_request(req_data)
+        resp = process_auth_request(req_data)
+        return resp
 
-        return jsonify(resp)
-
-app.run(host="0.0.0.0",port=4000)
+app.run(host="0.0.0.0",port=AUTH_SRV_PORT)
