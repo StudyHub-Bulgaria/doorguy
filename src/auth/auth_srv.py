@@ -1,4 +1,4 @@
-from flask import Flask,jsonify,render_template, request, flash, session, redirect, url_for
+from flask import Flask,jsonify, request, abort
 import datetime
 import logging
 import json
@@ -77,7 +77,10 @@ def log_auth_request(auth_data):
     print("[DBG] received auth request: ", auth_data)
 
 def authenticate_request(auth_data):
+    sig = auth_data.get("sig")
+    print("authentication data: ", sig)
     return True
+
 
 # Main auth parsing verifying routine
 def process_auth_request(auth_data):
@@ -89,11 +92,14 @@ def process_auth_request(auth_data):
     # Handle versioning
     ver = data.get("ver")
     if (ver != DOORGUY_VER):
-        print("[ERROR] Wrong doorguy version on client! {} != {}", ver, DOORGUY_VER)
-        # exit(1)
+        print("[ERROR] version mismatch server: {} != cleint {}", ver, DOORGUY_VER)
+        return abort(500)
 
     # Check data
-
+    if(authenticate_request(data)):
+        return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+    else:
+        return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
 
     # TODO: Process auth request?
 
@@ -108,6 +114,6 @@ def auth_me():
     else:
         req_data = request.get_json()
         resp = process_auth_request(req_data)
-        return jsonify(resp)
+        return resp
 
 app.run(host="0.0.0.0",port=AUTH_SRV_PORT)

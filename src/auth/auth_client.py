@@ -90,10 +90,13 @@ def main_loop():
     
     ## Start a heartbeat timer
     hb_timer = RepeatTimer(HEART_RATE, send_heartbeat, [server_ip, server_port])
-    # hb_timer.start()
+    hb_timer.start()
     
     # TODO: Do the image processing shit
     # Loop sending auth mesages
     auth_req_timer = RepeatTimer(5, request_auth_test)
     auth_req_timer.start()
+
+
+
 main_loop()
