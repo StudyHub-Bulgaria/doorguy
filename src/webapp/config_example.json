@@ -1,0 +1,16 @@
+{
+ "db_creds": {
+     "user":"doorguy",
+     "pass":"123456",
+     "host":"localhost",
+     "db_name":"some_db_name"
+ },
+ "main_auth_server": {
+     "ip": "127.0.0.1",
+     "port": "4040"
+ },
+ "bakcup_auth_server": {
+     "ip": "127.0.0.1",
+     "port": "6060"
+ }
+}

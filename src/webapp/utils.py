@@ -105,15 +105,23 @@ def create_user(sql_cursor, user_data, usr_pass, db_conn):
 
     # TODO
 
-# Read db creds from config and pass them back as a dictionary
-def read_db_creds():
-    try:
-        conf = toml.load(".doorguy_config.toml")
-    except:
-        print("[error] Configuration file missing.")
-        return
+CONFIG_FILE = "config.json"
 
-    return conf["database"]
+# Read config file
+def read_config():
+    try:
+        with open(CONFIG_FILE) as f:
+            raw_data = f.read()
+            try:
+                creds = json.loads(raw_data)
+            except Exception as e:
+                print("[error] Invalid config file.")
+                exit(-2)
+            return creds
+
+    except Exception as e:
+        print(e)
+        exit(-2)
 
 # Remove problematic special characters from string
 def string_clean_non_alphanumeric(src):
@@ -122,7 +130,10 @@ def string_clean_non_alphanumeric(src):
 
 # Connect to DB and return cursor object to manipulate DB if success
 def connect_db():
-    db_creds = read_db_creds()
+    conf = read_config()
+    if (conf):
+        db_creds = conf.get("db_creds")
+        print("TRY ", db_creds)
     try:
         cnx = mysql.connector.connect(
             user=db_creds["user"],
