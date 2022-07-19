@@ -5,14 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
 - Support for [ECDA signing](https://encryptionconsulting.com/education-center/what-is-ecdsa/) 
 - Payment page and integration with payment processor.
 - Interface API for controlling a door.
 - Proper logging system for events.
 - Proper notification system for unusual activity.
-
-## [Planned for 0.0.2]
-### Added
 - Added http test suite with http prompt
 - basic request/response authenticaion service server
 - basic logger for authentication events
