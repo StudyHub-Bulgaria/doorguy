@@ -1,43 +1,35 @@
 ## Welcome to StudyHub's doorguy systrem
 
-Doorguy is an access control system. It allows subscribers to register and open doors by scanning a QR code at the door.
+Doorguy is an access control system. It allows subscribers access a premises just with their mobile phone.
 
-This project has several components:
+### What is this about
 
-* Web portal for user
+Loosely, the architecture is the following:
 
-* Authentication backend to check if a given code has been signed 
+We have a [Flask](https://flask.palletsprojects.com/). web for managing subscriptions, and an authentication service.
 
-* Small python script to control raspberry cameras and send requests for authentication
+You can deploy as many clients as you want, where the clients send JSON payloads to be authenticated by the service. If the payload contain valid tokens,
+the authentication service sends RPC to a door controller to open the door.
 
-* Discord bot to notify us about any components going offline / repeated access failures.
+In our case, we deploy clients as a raspberry PI with a camera next to a door.
 
-### Architeture
-
-The authenticaiton system uses a server-client architecture. 
-The webpage to manage subscriptions is a python Flask app. It can run on a different server than the auth system, as long as both can reach the same DB.
-
-The clients (Raspberry Pis) parse QR codes, send https requests to authentication backend, containing the info parsed from QR code. If the info
-matches a user uuid and is signed with correct ECC key ( to be discussed ) the client gets an OK response and the server requests the controller to open the door.
+The user gets the QR code from the webpage, shows it to the camera. After parsing, the camera sends the token from the QR code to auth service.
 
 ### Folder Structure
 
-- webapp/ folder contains the web portal for registration and login
+- webapp/ folder contains the web portal for users
 
 - auth/ holds the service for authentication and user management.
 
-- door_interface/ has the TCP/IP interface stuff for the door controllers
+- door_interface/ will house the TCP/IP interface stuff for the door controllers
 
-- rp_client/ has the script running on the raspberries to scan QR codes and check against the auth backend.
+- client/ has the client code to scan QR codes and check against the auth backend.
 
 - docs/ holds developer documentation.
 
-- monitor_announce/ holds the discord bot interface and data
- 
-- .doorguy_config.toml is the main project config ( DB conenction strings, ports, IPs, etc)
+- monitor_announce/ holds utility stuff for noitifcations - email, discord bot
 
-- test_data/ contains some test QR codes and a database dump with test
-user data.
+- a config.json file in the webapp folder holds all the server configurations ( DB conenction strings, ports, IPs, etc)
 
 ## How to run
 
@@ -46,25 +38,23 @@ Clone this repo:
 git clone https://github.com/StudyHub-Bulgaria/doorguy.git
 ```
 
-Pre-requisites for the web-app: 
+Pre-requisites for the web-app and auth services: 
 > Python 3.6+
+> newish mysql or mariadb server 
 
-> mysql 8, reachable on 3306 ( can be configured ) 
-
-You can use pip (recommended) to install the python dependancies for each component:
-
-If you don't have pip, get it with:
-```
-sudo apt-get install python3-pip
-```
-
-When you have pip, inside web_app directory run:
+Use pip (recommended) to install the python dependancies for each component:
 ```
 pip install -r requirements.txt
 ```
-To *actually* run the thing, go to web_app/ and run:
+
+Load the schema file in your DB:
 ```
-python app_base.py 
+mysql -u <user> -h <host> -p <db_name> schema.sql
+
+```
+To run each compoennt
+```
+python run_dev.py 
 ```
 
 By default you will see the page on http://localhost:5000
@@ -84,9 +74,9 @@ Under construction.
 
 ## Hardware
 For our proof of concept we are using a few Raspberry Pi 4s and the standard raspberry pi cameras v2 to scan the codes.
-The backend authentication runs on a small linux machine and communicates with standard door controllers from a vendor.
+The backend authentication and web page services run on a small linux machine and communicates with standard door controllers from a vendor.
 
-### Motivation
+### Why
 
 [StudyHub](www.studyhub.bg) is a 24/7 co-studying (libary-ish) space in Sofia, Bulgaria. 
 We have a system with RFID cards that are issued to customers at reception during working hours. With the card,
