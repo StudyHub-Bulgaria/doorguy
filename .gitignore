@@ -1,4 +1,5 @@
 __pycache__
 tags
 .env
-src/webapp/.doorguy_config.toml
+**/config.json
+.vscode
