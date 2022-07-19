@@ -65,4 +65,35 @@ def loop():
     mock_door = DoorSocketMock()
     while(True):
         t = mock_door.accept_conn()
-loop()
+
+
+## Door communication API
+door_conn_1 = ("127.0.0.1", 4040)
+door_conn_2 = ("127.0.0.1", 4040)
+door_conn_3 = ("127.0.0.1", 4040)
+door_conn_4 = ("127.0.0.1", 4040)
+
+doors = {1:door_conn_1, 2:door_conn_2, 3:door_conn_3, 4:door_conn_4}
+def send_req_open(door_id):
+    print("Trying to open door: ", door_id)
+
+    if (int(door_id) not in doors.keys()):
+        print("[ERROR] No such door! Check your config!")
+        return 
+        
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.connect(doors[door_id])
+        sock.send(REQ_CLOSE)
+    except Exception as e:
+        print("Failed to connect to door: {}".format(e))
+      
+
+def send_req_close(door_id):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.connect(doors[door_id])
+        sock.send(REQ_CLOSE)
+    except Exception as e:
+        print("Failed to connect to door: {}".format(e))
+      
