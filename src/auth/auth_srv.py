@@ -7,6 +7,12 @@ from ecdsa import SigningKey, VerifyingKey
 from threading import Thread, Timer
 
 from heartbeat import DOORGUY_VER
+
+# For doors
+import sys
+sys.path.insert(0,'../')
+from door_interface.mock_door_controller import send_req_close, send_req_open
+
 ## Configure logger object
 # web_log = logging.getLogger("vratar_auth_log")
 
@@ -97,6 +103,8 @@ def process_auth_request(auth_data):
 
     # Check data
     if(authenticate_request(data)):
+        # TODO: Call API to open door
+        send_req_open(data.get("door_id"))
         return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
     else:
         return json.dumps({'success':False}), 400, {'ContentType':'application/json'} 
