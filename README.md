@@ -59,6 +59,9 @@ python run_dev.py
 
 By default you will see the page on http://localhost:5000
 
+[TODO} The webapp, auth service and clients can be deployed on different hosts, networks, geographically. As long as the webapp and auth service can reach the DB, we're good. But for now, 
+we'd like to deploy everything on prem as that means we're somewhat resilient to conenction drops - if the internet *dies* users with accounts can still use the service.
+
 ## Contributing
 Read through the github Issues - they describe on a high level what the roadmap is.
 For more specific todos, read through the docs. Each component has a description and todo list with needed APIs and functions.

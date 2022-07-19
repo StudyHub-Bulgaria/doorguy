@@ -9,8 +9,6 @@ renew subscription button, change password button.
 
 ## To Do:
 
-- Add test-portal.studyhub.bg for testing? Add CI/CD with git push and python restart for user/non-technical maintainer testing?
-
 - Make sure home page is only accessible if user is logged in.
 
 - Add more validation to user registration.

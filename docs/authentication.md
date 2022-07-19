@@ -18,10 +18,3 @@ Thi is separeted from the frontend mostly because:
 When client requests validation:
 
 - *if ECDSA is implemented, check signature. Deny not signed data.*
-
-- Check provided code and username agaisnt DB. If code matches, validity == true and 
-expiration time > current time return okay response. Otherwise refuse code with proper response -
-invalid date, invalid code, etc. If username doesnt exist, return wrong code. Don't allow username enumeration.
-
-- Make sure QR code format used is *hard* to bruteforce. Signing probably helps by adding data.
-
