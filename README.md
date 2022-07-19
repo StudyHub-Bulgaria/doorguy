@@ -6,7 +6,7 @@ Doorguy is an access control system. It allows subscribers access a premises jus
 
 Loosely, the architecture is the following:
 
-We have a [Flask](https://flask.palletsprojects.com/). web for managing subscriptions, and an authentication service.
+We have a [Flask](https://flask.palletsprojects.com/) web for managing subscriptions, and an authentication service.
 
 You can deploy as many clients as you want, where the clients send JSON payloads to be authenticated by the service. If the payload contain valid tokens,
 the authentication service sends RPC to a door controller to open the door.
